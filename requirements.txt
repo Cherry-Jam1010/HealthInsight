@@ -2,3 +2,4 @@ fastapi==0.136.1
 uvicorn[standard]==0.47.0
 pandas
 jinja2
+numpy
