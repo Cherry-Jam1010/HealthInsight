@@ -135,3 +135,15 @@ data/                    # NHANES 数据
 2. 补 BMI、慢病、医疗可及性等变量，支撑更完整的解释层。
 3. 新增公平性审计与阈值推荐接口。
 4. 增加上传用户数据、异步分析任务与 PDF 报告导出。
+
+## 部署到 Render
+
+仓库已经包含 `render.yaml`，可以直接按 Render 的 Web Service / Blueprint 流程部署。
+
+关键信息：
+
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Health Check: `/api/v1/health`
+
+如果你只是想最快把网站分享出去，推荐先部署到 Render。
