@@ -28,8 +28,10 @@ TAGS_METADATA = [
 NAV_ITEMS = [
     {"key": "home", "label": "首页", "href": "/"},
     {"key": "scenarios", "label": "应用场景", "href": "/scenarios"},
+    {"key": "examples", "label": "落地实例", "href": "/examples"},
     {"key": "studio", "label": "API 展示台", "href": "/studio"},
     {"key": "reports", "label": "报告中心", "href": "/reports"},
+    {"key": "vision", "label": "全球视野", "href": "/vision"},
 ]
 
 app = FastAPI(
@@ -142,6 +144,24 @@ async def studio_page(request: Request) -> HTMLResponse:
     )
 
 
+@app.get("/examples", response_class=HTMLResponse, tags=["Site"])
+async def examples_page(request: Request) -> HTMLResponse:
+    service = get_service()
+    summary = service.summary()
+    cohorts = service.priority_cohorts(limit=4, min_participants=100)
+    manager_report = service.audience_report("manager")
+    return templates.TemplateResponse(
+        request=request,
+        name="examples.html",
+        context=page_context(
+            "examples",
+            summary=summary,
+            cohorts=cohorts,
+            manager_report=manager_report,
+        ),
+    )
+
+
 @app.get("/reports", response_class=HTMLResponse, tags=["Site"])
 async def reports_page(request: Request) -> HTMLResponse:
     initial_report = get_service().audience_report("researcher")
@@ -152,6 +172,22 @@ async def reports_page(request: Request) -> HTMLResponse:
             "reports",
             initial_report=initial_report,
             initial_report_json=json.dumps(initial_report, ensure_ascii=False, indent=2),
+        ),
+    )
+
+
+@app.get("/vision", response_class=HTMLResponse, tags=["Site"])
+async def vision_page(request: Request) -> HTMLResponse:
+    service = get_service()
+    capabilities = service.capabilities()
+    summary = service.summary()
+    return templates.TemplateResponse(
+        request=request,
+        name="vision.html",
+        context=page_context(
+            "vision",
+            capabilities=capabilities,
+            summary=summary,
         ),
     )
 

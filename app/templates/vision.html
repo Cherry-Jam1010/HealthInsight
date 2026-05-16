@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}HealthInsight | 全球视野{% endblock %}
+
+{% block content %}
+<section class="page-hero section-shell">
+  <p class="eyebrow">Global Horizon</p>
+  <h1>从机构级健康洞察出发，逐步扩展到更广阔的全球心理健康视野。</h1>
+  <p class="hero-lead">
+    当前版本以 NHANES 数据为起点，验证机构筛查支持、人群画像和重点群体识别的能力。
+    下一阶段，我们会把平台做成可对接多地区、多语言、多标准的数据洞察基础设施。
+  </p>
+</section>
+
+<section class="section-shell vision-layout">
+  <article class="panel panel-dark world-panel reveal-on-scroll" data-vision-root>
+    <div class="section-heading spread compact">
+      <div>
+        <p class="section-tag">全球地图</p>
+        <h2>平台未来将逐步接入不同区域的数据洞察能力</h2>
+      </div>
+      <span class="status-dot">Roadmap View</span>
+    </div>
+
+    <div class="world-map-stage">
+      <svg class="world-map-svg" viewBox="0 0 960 480" aria-hidden="true">
+        <path d="M106 180c18-34 44-52 78-54l64 10 36 34-12 36-34 10-18 32-44 10-44-18-28-26z"></path>
+        <path d="M300 136l54-22 62 10 34 30-10 42-34 28-10 38-56 12-54-20-20-36 12-46z"></path>
+        <path d="M446 136l80-22 78 18 44 42-8 42-52 30-18 44-62 8-52-16-28-46 8-48z"></path>
+        <path d="M592 278l46-4 46 22 48-8 54 28-14 42-50 20-70-8-44-30-20-34z"></path>
+        <path d="M714 150l52-28 88 10 46 36-12 40-46 18-18 40-56 16-44-22-22-48z"></path>
+        <path d="M792 308l34-6 42 22 14 34-20 26-42-2-30-24-8-26z"></path>
+      </svg>
+
+      <button class="map-hotspot is-active" type="button" style="left: 20%; top: 32%" data-region-button="north_america">
+        北美
+      </button>
+      <button class="map-hotspot" type="button" style="left: 39%; top: 30%" data-region-button="europe">
+        欧洲
+      </button>
+      <button class="map-hotspot" type="button" style="left: 54%; top: 38%" data-region-button="mena">
+        中东与非洲
+      </button>
+      <button class="map-hotspot" type="button" style="left: 69%; top: 36%" data-region-button="asia_pacific">
+        亚太
+      </button>
+      <button class="map-hotspot" type="button" style="left: 30%; top: 61%" data-region-button="latin_america">
+        拉美
+      </button>
+    </div>
+
+    <div class="vision-detail-card">
+      <p class="section-tag" data-region-stage>当前起点</p>
+      <h3 data-region-title>北美机构级样本洞察</h3>
+      <p data-region-description>
+        以现有 NHANES 数据能力为核心，持续验证重点群体识别、机构汇报与筛查支持这条主线。
+      </p>
+      <ul class="clean-list light" data-region-points>
+        <li>公共卫生与心理健康项目的机构级分析</li>
+        <li>行为与睡眠信号驱动的优先级识别</li>
+        <li>多角色汇报与 API 对接能力</li>
+      </ul>
+    </div>
+  </article>
+
+  <aside class="panel reveal-on-scroll">
+    <p class="section-tag">路线图</p>
+    <h2>从单一数据源，走向多区域、多标准、多语言洞察平台</h2>
+    <div class="timeline roadmap-timeline">
+      <article>
+        <span>Now</span>
+        <h3>机构筛查支持</h3>
+        <p>打磨人群画像、重点群体识别、机构简报与演示体验。</p>
+      </article>
+      <article>
+        <span>Next</span>
+        <h3>多数据域扩展</h3>
+        <p>加入 PHQ-9、慢病、可及性和更多社会决定因素指标。</p>
+      </article>
+      <article>
+        <span>Later</span>
+        <h3>全球对比视角</h3>
+        <p>支持跨国家、跨地区的群体洞察、风险比较与项目协作。</p>
+      </article>
+    </div>
+  </aside>
+</section>
+
+<section class="section-shell feature-grid vision-cards">
+  <article class="feature-card reveal-on-scroll">
+    <h3>多语言数据理解</h3>
+    <p>让不同地区的管理者和研究团队都能直接用本地语言理解结果与简报。</p>
+  </article>
+  <article class="feature-card reveal-on-scroll">
+    <h3>国家与地区对比</h3>
+    <p>支持比较不同国家、不同城市在重点行为负担与筛查压力上的差异。</p>
+  </article>
+  <article class="feature-card reveal-on-scroll">
+    <h3>全球项目协作</h3>
+    <p>为国际组织、医院网络和研究联盟提供统一的洞察接口与对照框架。</p>
+  </article>
+  <article class="feature-card reveal-on-scroll">
+    <h3>政策与服务评估</h3>
+    <p>从描述性分析走向项目评估、资源分配建议与长期干预反馈。</p>
+  </article>
+</section>
+
+<section class="section-shell section-grid-two">
+  <article class="panel reveal-on-scroll">
+    <p class="section-tag">当前能力</p>
+    <h2>已经稳定可展示的能力模块</h2>
+    <ul class="clean-list">
+      {% for item in capabilities.current_modules %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </article>
+
+  <article class="panel panel-accent reveal-on-scroll">
+    <p class="section-tag">未来模块</p>
+    <h2>下一阶段重点补齐的产品层能力</h2>
+    <div class="future-stack">
+      {% for item in capabilities.deferred_modules %}
+      <article class="future-card">
+        <h3>{{ item.name }}</h3>
+        <p>{{ item.blocked_by }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="section-shell cta-ribbon reveal-on-scroll">
+  <div>
+    <p class="section-tag">继续浏览</p>
+    <h2>今天先看清当前能力，下一步再把视野扩展到更大的真实世界。</h2>
+    <p>你可以先通过落地实例理解产品价值，再进入演示台查看当前可用接口。</p>
+  </div>
+  <div class="cta-actions">
+    <a class="button button-primary" href="/examples">查看落地实例</a>
+    <a class="button button-secondary" href="/studio">进入平台演示</a>
+  </div>
+</section>
+{% endblock %}
