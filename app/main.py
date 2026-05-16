@@ -7,7 +7,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -116,6 +116,11 @@ async def homepage(request: Request) -> HTMLResponse:
             summary_json=json.dumps(summary, ensure_ascii=False, indent=2),
         ),
     )
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon() -> RedirectResponse:
+    return RedirectResponse(url="/static/favicon.svg", status_code=307)
 
 
 @app.get("/scenarios", response_class=HTMLResponse, tags=["Site"])
