@@ -1,7 +1,7 @@
 ---
 title: HealthInsight
 emoji: 🩺
-colorFrom: teal
+colorFrom: blue
 colorTo: blue
 sdk: docker
 app_port: 7860
