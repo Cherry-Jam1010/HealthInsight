@@ -48,6 +48,7 @@ jobs:
           mkdir -p /tmp/hf-space
           cp -a . /tmp/hf-space/
           rm -rf /tmp/hf-space/.git /tmp/hf-space/.github
+          rm -f /tmp/hf-space/data/*.xpt
           cp HF_SPACE_README.md /tmp/hf-space/README.md
 
       - name: Push to Hugging Face Space

@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
+import shutil
 from typing import Any
+from urllib.error import URLError
+from urllib.request import urlopen
 
 import numpy as np
 import pandas as pd
@@ -40,6 +44,10 @@ PRIORITY_TIER_LABELS = {
     4: "高优先级",
     5: "高优先级",
 }
+DEFAULT_DATA_BASE_URL = os.getenv(
+    "HEALTHINSIGHT_DATA_BASE_URL",
+    "https://raw.githubusercontent.com/Cherry-Jam1010/HealthInsight/main/data",
+)
 
 
 @dataclass(frozen=True)
@@ -59,11 +67,43 @@ class NHANESAnalyticsService:
             DatasetInfo("P_PAQ.xpt", "体力活动", "行为活动模式"),
             DatasetInfo("P_SLQ.xpt", "睡眠", "睡眠时长与睡眠相关筛查输入"),
         ]
+        self._ensure_required_files()
         self.source_frames = {
             info.filename: self._load_xpt(info.filename) for info in self.datasets
         }
         self.analysis_frame = self._prepare_analysis_frame()
         self.total_weight = float(self.analysis_frame["WTINTPRP"].dropna().sum())
+
+    def _ensure_required_files(self) -> None:
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        missing = [
+            dataset.filename
+            for dataset in self.datasets
+            if not (self.data_dir / dataset.filename).exists()
+        ]
+        if not missing:
+            return
+
+        base_url = DEFAULT_DATA_BASE_URL.rstrip("/")
+        for filename in missing:
+            self._download_data_file(base_url, filename)
+
+    def _download_data_file(self, base_url: str, filename: str) -> None:
+        target_path = self.data_dir / filename
+        temp_path = self.data_dir / f"{filename}.part"
+        file_url = f"{base_url}/{filename}"
+
+        try:
+            with urlopen(file_url, timeout=90) as response, temp_path.open("wb") as output:
+                shutil.copyfileobj(response, output)
+            temp_path.replace(target_path)
+        except (OSError, URLError) as exc:
+            if temp_path.exists():
+                temp_path.unlink()
+            raise RuntimeError(
+                f"缺少数据文件 {filename}，并且自动下载失败。"
+                f"请检查 {file_url} 是否可访问，或手动放入 data 目录。"
+            ) from exc
 
     def _load_xpt(self, filename: str) -> pd.DataFrame:
         frame = pd.read_sas(self.data_dir / filename, format="xport", encoding="utf-8")

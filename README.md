@@ -223,4 +223,5 @@ https://你的用户名-healthinsight.hf.space
 
 - 这个工作流会先把 `HF_SPACE_README.md` 复制成 Space 需要的 `README.md`，再推送到 Hugging Face。
 - 工作流会在 GitHub Runner 中生成一个临时同步目录，并自动排除 `.github/` 和 `.git/` 目录。
+- 为了避开 Hugging Face 对二进制数据文件的推送限制，工作流不会把 `data/*.xpt` 同步到 Space；应用会在 Hugging Face 启动时自动从 GitHub 原仓库下载这些文件。
 - 如果仓库里将来出现超过 `10MB` 的大文件，按 Hugging Face 官方说明，需要改用 Git LFS。
