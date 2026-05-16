@@ -148,124 +148,75 @@ data/                    # NHANES 数据
 
 如果你只是想最快把网站分享出去，推荐先部署到 Render。
 
-## 部署到 Koyeb
+## 用 Cloudflare Tunnel 分享网站
 
-如果你不想用 Render，也暂时不想继续卡在 Hugging Face，`Koyeb` 是当前最适合这个项目的备选方案。它支持直接从 GitHub 拉取仓库，也支持按仓库中的 `Dockerfile` 自动构建。
+如果你现在的目标是先把网站发给老师、同学或产品用户看，`Cloudflare Tunnel` 是最省事的方式。它不需要把项目部署到新平台，只要你的本地服务能跑起来，就能立刻生成一个公网链接。
 
-当前仓库已经具备 Koyeb 所需的基础条件：
+官方文档：
 
-- 有可直接启动的 `Dockerfile`
-- 应用支持读取平台注入的 `PORT`
-- 首页、静态资源和 API 都由同一个 FastAPI 服务提供
+- `Cloudflare Tunnel`：https://developers.cloudflare.com/tunnel/
+- `Quick tunnels`：https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/
+- `Setup`：https://developers.cloudflare.com/tunnel/setup/
 
-### 第一步：注册并登录 Koyeb
+### 第一步：下载 cloudflared
 
-打开：
+先下载 Windows 版 `cloudflared.exe`，放到项目根目录，或者放到系统环境变量可以找到的位置。
 
-```text
-https://app.koyeb.com/
-```
-
-注册后进入控制台。
-
-### 第二步：创建 Web Service
-
-在控制台中点击：
-
-- `Create Web Service`
-
-部署方式选择：
-
-- `GitHub`
-
-然后连接你的 GitHub 账号，并选择仓库：
+建议最终路径类似：
 
 ```text
-Cherry-Jam1010/HealthInsight
+E:\Grade_2_2\ai\hw4\cloudflared.exe
 ```
 
-分支选择：
+### 第二步：一键启动分享
+
+仓库已经包含一个分享脚本：
+
+```powershell
+.\share.ps1
+```
+
+默认行为：
+
+- 本地启动 `FastAPI` 服务
+- 监听 `127.0.0.1:8010`
+- 自动打开 `Cloudflare Tunnel`
+- 在终端里打印一个 `trycloudflare.com` 的公网地址
+
+如果你的 `cloudflared.exe` 不在项目根目录，可以手动指定：
+
+```powershell
+.\share.ps1 -CloudflaredPath "C:\你的路径\cloudflared.exe"
+```
+
+如果你想换端口，也可以这样：
+
+```powershell
+.\share.ps1 -Port 8000
+```
+
+### 第三步：把公网链接发给别人
+
+脚本成功后，终端里会出现一个类似下面的地址：
 
 ```text
-main
+https://xxxx-xxxx.trycloudflare.com
 ```
 
-### 第三步：选择 Dockerfile 构建
+你可以直接分享这些链接：
 
-因为仓库根目录已经有 `Dockerfile`，Koyeb 会自动识别并按 Dockerfile 构建。
-
-如果页面里允许你手动选择构建方式，优先选：
-
-- `Dockerfile`
-
-### 第四步：检查运行参数
-
-这个项目当前容器启动命令已经写在 `Dockerfile` 里，一般不需要手改。Koyeb 会自动注入 `PORT` 环境变量，应用会监听这个端口。
-
-如需手动确认，核心启动逻辑是：
-
-```text
-python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT}
-```
-
-### 第五步：公开服务端口
-
-创建服务时，确认它是一个公开的 Web Service，并把 HTTP 路由指向应用监听端口。
-
-如果页面需要你手填端口，填：
-
-```text
-7860
-```
-
-如果 Koyeb 自动根据 `PORT` 识别端口，保持默认即可。
-
-### 第六步：选择实例规格
-
-如果你账号里可以选免费实例，优先选择：
-
-- `Free`
-
-如果界面没有免费规格，就按你账号当前能用的最低规格选择。
-
-### 第七步：等待构建和启动
-
-创建后，Koyeb 会自动：
-
-- 拉取 GitHub 仓库
-- 根据 `Dockerfile` 构建镜像
-- 启动 Web Service
-
-启动成功后，你会拿到一个类似下面的公开地址：
-
-```text
-https://xxx.koyeb.app
-```
-
-### 第八步：上线后检查
-
-建议至少检查这些页面：
-
-- `/`
-- `/scenarios`
-- `/studio`
-- `/reports`
-- `/docs`
-- `/api/v1/health`
-
-例如：
-
-```text
-https://你的域名.koyeb.app/
-https://你的域名.koyeb.app/docs
-https://你的域名.koyeb.app/api/v1/health
-```
+- 首页：`https://xxxx-xxxx.trycloudflare.com/`
+- 应用场景：`https://xxxx-xxxx.trycloudflare.com/scenarios`
+- API 展示台：`https://xxxx-xxxx.trycloudflare.com/studio`
+- 报告中心：`https://xxxx-xxxx.trycloudflare.com/reports`
+- API 文档：`https://xxxx-xxxx.trycloudflare.com/docs`
 
 ### 注意事项
 
-- 当前仓库默认会把 `data/` 中的 NHANES 数据一并打包进镜像，所以 Koyeb 上不需要额外下载数据。
-- 如果后面你想减小镜像体积，也可以像 Hugging Face 方案那样改成运行时下载数据。
-- 如果部署成功但页面打不开，优先检查 Koyeb 中 Web Service 的公开端口配置和运行日志。
+- 你的电脑要保持开机。
+- `share.ps1` 运行的终端不要关闭。
+- 按 `Ctrl + C` 会停止隧道，并自动结束本地服务。
+- `Quick Tunnel` 更适合演示和临时分享，不适合长期正式上线。
 
 ## 部署到 Hugging Face Spaces
 
