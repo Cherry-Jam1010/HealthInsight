@@ -23,30 +23,79 @@
     </div>
 
     <div class="world-map-stage">
-      <svg class="world-map-svg" viewBox="0 0 960 480" aria-hidden="true">
-        <path d="M106 180c18-34 44-52 78-54l64 10 36 34-12 36-34 10-18 32-44 10-44-18-28-26z"></path>
-        <path d="M300 136l54-22 62 10 34 30-10 42-34 28-10 38-56 12-54-20-20-36 12-46z"></path>
-        <path d="M446 136l80-22 78 18 44 42-8 42-52 30-18 44-62 8-52-16-28-46 8-48z"></path>
-        <path d="M592 278l46-4 46 22 48-8 54 28-14 42-50 20-70-8-44-30-20-34z"></path>
-        <path d="M714 150l52-28 88 10 46 36-12 40-46 18-18 40-56 16-44-22-22-48z"></path>
-        <path d="M792 308l34-6 42 22 14 34-20 26-42-2-30-24-8-26z"></path>
-      </svg>
+      <div class="globe-shell" aria-hidden="true">
+        <div class="orbit-ring orbit-ring-a"></div>
+        <div class="orbit-ring orbit-ring-b"></div>
+        <div class="orbit-ring orbit-ring-c"></div>
 
-      <button class="map-hotspot is-active" type="button" style="left: 20%; top: 32%" data-region-button="north_america">
-        北美
-      </button>
-      <button class="map-hotspot" type="button" style="left: 39%; top: 30%" data-region-button="europe">
-        欧洲
-      </button>
-      <button class="map-hotspot" type="button" style="left: 54%; top: 38%" data-region-button="mena">
-        中东与非洲
-      </button>
-      <button class="map-hotspot" type="button" style="left: 69%; top: 36%" data-region-button="asia_pacific">
-        亚太
-      </button>
-      <button class="map-hotspot" type="button" style="left: 30%; top: 61%" data-region-button="latin_america">
-        拉美
-      </button>
+        <svg class="globe-svg" viewBox="0 0 520 520">
+          <defs>
+            <radialGradient id="globeGlow" cx="35%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="#93fff0" stop-opacity="0.95"></stop>
+              <stop offset="45%" stop-color="#2da9a4" stop-opacity="0.92"></stop>
+              <stop offset="100%" stop-color="#0d3946" stop-opacity="1"></stop>
+            </radialGradient>
+            <linearGradient id="continentFill" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#d8fff3" stop-opacity="0.95"></stop>
+              <stop offset="100%" stop-color="#6de0c9" stop-opacity="0.85"></stop>
+            </linearGradient>
+            <clipPath id="globeClip">
+              <circle cx="260" cy="260" r="172"></circle>
+            </clipPath>
+          </defs>
+
+          <circle class="globe-aura" cx="260" cy="260" r="206"></circle>
+          <circle class="globe-body" cx="260" cy="260" r="172"></circle>
+
+          <g class="globe-grid" clip-path="url(#globeClip)">
+            <ellipse cx="260" cy="260" rx="172" ry="172"></ellipse>
+            <ellipse cx="260" cy="260" rx="172" ry="120"></ellipse>
+            <ellipse cx="260" cy="260" rx="172" ry="74"></ellipse>
+            <ellipse cx="260" cy="260" rx="118" ry="172"></ellipse>
+            <ellipse cx="260" cy="260" rx="68" ry="172"></ellipse>
+            <path d="M88 260h344"></path>
+            <path d="M112 198h296"></path>
+            <path d="M112 322h296"></path>
+          </g>
+
+          <g class="globe-continents" clip-path="url(#globeClip)">
+            <path d="M140 180c18-18 46-34 78-38l44 18 20 28-10 26-34 10-18 28-44 10-34-14-18-28z"></path>
+            <path d="M240 150c22-20 48-28 80-26l50 18 28 36-10 30-32 20-16 36-46 16-48-12-22-34 8-40z"></path>
+            <path d="M212 266c18 2 32 12 38 28l-6 36-28 36-46 12-30-16 2-32 18-36 28-20z"></path>
+            <path d="M320 240c22-10 46-12 74-8l46 22 24 34-8 26-34 18-44-4-38-20-22-34z"></path>
+            <path d="M370 156c18-14 40-18 66-14l32 18 10 28-18 18-34 6-28-18-14-22z"></path>
+          </g>
+
+          <g class="globe-arcs" clip-path="url(#globeClip)">
+            <path d="M132 246c54-42 116-48 182-24 26 10 50 24 72 42"></path>
+            <path d="M164 318c46-28 94-38 146-28 34 6 64 18 92 40"></path>
+          </g>
+
+          <g class="globe-nodes">
+            <circle cx="182" cy="214" r="7"></circle>
+            <circle cx="278" cy="190" r="7"></circle>
+            <circle cx="338" cy="260" r="7"></circle>
+            <circle cx="388" cy="192" r="7"></circle>
+            <circle cx="224" cy="330" r="7"></circle>
+          </g>
+        </svg>
+
+        <button class="map-hotspot is-active" type="button" style="left: 16%; top: 32%" data-region-button="north_america">
+          北美
+        </button>
+        <button class="map-hotspot" type="button" style="left: 33%; top: 18%" data-region-button="europe">
+          欧洲
+        </button>
+        <button class="map-hotspot" type="button" style="left: 52%; top: 30%" data-region-button="mena">
+          中东与非洲
+        </button>
+        <button class="map-hotspot" type="button" style="left: 76%; top: 26%" data-region-button="asia_pacific">
+          亚太
+        </button>
+        <button class="map-hotspot" type="button" style="left: 27%; top: 72%" data-region-button="latin_america">
+          拉美
+        </button>
+      </div>
     </div>
 
     <div class="vision-detail-card">

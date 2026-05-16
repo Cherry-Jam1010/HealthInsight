@@ -895,12 +895,12 @@ pre {
 
 .world-map-stage {
   position: relative;
-  min-height: 360px;
+  min-height: 430px;
   margin: 12px 0 22px;
   border-radius: 26px;
   background:
-    radial-gradient(circle at 50% 42%, rgba(76, 173, 167, 0.18), transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+    radial-gradient(circle at 50% 46%, rgba(90, 216, 206, 0.16), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
@@ -916,30 +916,95 @@ pre {
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent 100%);
 }
 
-.world-map-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
+.globe-shell {
+  position: relative;
+  width: min(100%, 760px);
+  min-height: 430px;
+  margin: 0 auto;
 }
 
-.world-map-svg path {
-  fill: rgba(206, 243, 238, 0.76);
-  stroke: rgba(255, 255, 255, 0.24);
-  stroke-width: 6px;
-  stroke-linejoin: round;
+.globe-svg {
+  width: 100%;
+  height: 430px;
+  display: block;
+  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.24));
+}
+
+.globe-aura {
+  fill: rgba(77, 232, 217, 0.08);
+}
+
+.globe-body {
+  fill: url(#globeGlow);
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 2px;
+}
+
+.globe-grid ellipse,
+.globe-grid path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 2px;
+}
+
+.globe-continents path {
+  fill: url(#continentFill);
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 2px;
+}
+
+.globe-arcs path {
+  fill: none;
+  stroke: rgba(255, 244, 214, 0.55);
+  stroke-width: 3px;
+  stroke-linecap: round;
+  stroke-dasharray: 8 12;
+}
+
+.globe-nodes circle {
+  fill: #fff4d5;
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 3px;
+}
+
+.orbit-ring {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.orbit-ring-a {
+  width: 74%;
+  height: 74%;
+}
+
+.orbit-ring-b {
+  width: 62%;
+  height: 62%;
+  transform: translate(-50%, -50%) rotate(24deg);
+}
+
+.orbit-ring-c {
+  width: 88%;
+  height: 52%;
+  transform: translate(-50%, -50%) rotate(-16deg);
 }
 
 .map-hotspot {
   position: absolute;
   transform: translate(-50%, -50%);
-  padding: 10px 14px;
+  padding: 10px 16px;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 999px;
-  background: rgba(12, 122, 119, 0.16);
+  background: rgba(9, 51, 62, 0.74);
   color: white;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(10px);
 }
 
 .map-hotspot::after {
@@ -952,8 +1017,8 @@ pre {
 }
 
 .map-hotspot.is-active {
-  background: rgba(230, 185, 111, 0.26);
-  border-color: rgba(255, 239, 214, 0.38);
+  background: rgba(230, 185, 111, 0.34);
+  border-color: rgba(255, 239, 214, 0.52);
 }
 
 .vision-detail-card {
