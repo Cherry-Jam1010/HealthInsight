@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}HealthInsight{% endblock %}</title>
+    <meta
+      name="description"
+      content="面向公共卫生、心理健康与医疗机构的数据洞察 API 与产品展示站。"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/site.css') }}" />
+  </head>
+  <body data-page="{{ active_page }}">
+    <div class="site-backdrop"></div>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand-mark" href="/">
+          <span class="brand-chip">HI</span>
+          <span>
+            <strong>HealthInsight</strong>
+            <small>机构级健康洞察平台</small>
+          </span>
+        </a>
+        <button class="nav-toggle" type="button" data-nav-toggle aria-label="打开导航">
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav" data-nav-menu>
+          {% for item in nav_items %}
+          <a
+            href="{{ item.href }}"
+            class="{% if item.key == active_page %}is-active{% endif %}"
+          >
+            {{ item.label }}
+          </a>
+          {% endfor %}
+        </nav>
+        <div class="header-actions">
+          <a class="ghost-link" href="/docs">开发接入</a>
+          <a class="primary-link" href="/studio">平台演示</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="site-main">{% block content %}{% endblock %}</main>
+
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <section>
+          <p class="footer-label">HealthInsight</p>
+          <p>
+            面向公共卫生、心理健康与医疗机构的健康洞察与筛查支持平台。
+          </p>
+        </section>
+        <section>
+          <p class="footer-label">核心服务</p>
+          <p>人群画像、重点群体识别、筛查支持、机构级简报输出。</p>
+        </section>
+        <section>
+          <p class="footer-label">使用边界</p>
+          <p>平台提供群体分析与机构决策支持信息，不替代医生、心理咨询师或正式诊断流程。</p>
+        </section>
+      </div>
+    </footer>
+
+    <script src="{{ url_for('static', path='/js/site.js') }}" defer></script>
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>

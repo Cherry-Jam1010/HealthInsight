@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}HealthInsight | 机构级健康洞察与筛查支持平台{% endblock %}
+
+{% block content %}
+<section class="hero hero-home section-shell">
+  <div class="hero-copy">
+    <p class="eyebrow">Institutional Health Insight Platform</p>
+    <h1>为机构提供更早识别重点人群的健康洞察服务。</h1>
+    <p class="hero-lead">
+      HealthInsight 面向公共卫生团队、心理健康机构、医院管理者与研究团队，
+      提供人群画像、重点群体识别、行为风险洞察和多角色决策简报，
+      帮助机构更快完成筛查支持、项目规划和资源配置。
+    </p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="/studio">查看平台演示</a>
+      <a class="button button-secondary" href="/scenarios">浏览解决方案</a>
+    </div>
+    <div class="hero-badges">
+      <span>机构级人群画像</span>
+      <span>重点群体识别</span>
+      <span>多角色决策简报</span>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <article class="glass-card stat-card float-a">
+      <span>合并样本</span>
+      <strong>{{ summary.sample.merged_adult_rows }}</strong>
+      <small>人口学 + 活动 + 睡眠</small>
+    </article>
+    <article class="glass-card stat-card float-b">
+      <span>短睡眠率</span>
+      <strong>{{ summary.behavioral_signals.short_sleep_rate_pct }}%</strong>
+      <small>加权总体估计</small>
+    </article>
+    <article class="glass-card stat-card wide-card">
+      <span>服务定位</span>
+      <strong>机构级筛查支持</strong>
+      <small>服务于项目管理、筛查支持与资源配置</small>
+    </article>
+    <div class="signal-lines">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</section>
+
+<section class="section-shell section-grid">
+  <article class="panel panel-accent reveal-on-scroll">
+    <p class="section-tag">平台价值</p>
+    <h2>把分散的数据分析结果，转化为机构可以直接使用的行动信息。</h2>
+    <p>
+      平台通过统一的数据处理与洞察输出流程，帮助机构快速了解样本结构、
+      锁定重点关注群体，并将结果同步给研究、管理和执行团队。
+    </p>
+  </article>
+  <article class="panel reveal-on-scroll">
+    <p class="section-tag">适用对象</p>
+    <ul class="clean-list">
+      <li>公共卫生研究团队：识别人群差异与重点群体。</li>
+      <li>心理健康机构：支持筛查规划与服务优先级制定。</li>
+      <li>医院与管理部门：辅助资源配置与项目汇报。</li>
+    </ul>
+  </article>
+</section>
+
+<section class="section-shell">
+  <div class="section-heading">
+    <p class="section-tag">核心能力</p>
+    <h2>围绕机构用户的四类高频需求设计</h2>
+  </div>
+  <div class="feature-grid">
+    <article class="feature-card reveal-on-scroll">
+      <h3>数据体检</h3>
+      <p>快速了解样本规模、字段覆盖率与数据完整性，帮助团队建立可靠分析基础。</p>
+    </article>
+    <article class="feature-card reveal-on-scroll">
+      <h3>人群画像</h3>
+      <p>按年龄、性别、收入与族裔分层展示关键特征，帮助用户快速理解群体差异。</p>
+    </article>
+    <article class="feature-card reveal-on-scroll">
+      <h3>重点群体识别</h3>
+      <p>基于睡眠、活动与社会经济特征识别值得优先关注的人群组合。</p>
+    </article>
+    <article class="feature-card reveal-on-scroll">
+      <h3>决策简报</h3>
+      <p>同一份分析结果自动适配研究者、管理者、临床团队与技术团队的阅读方式。</p>
+    </article>
+  </div>
+</section>
+
+<section class="section-shell interactive-panel reveal-on-scroll">
+  <div class="section-heading spread">
+    <div>
+      <p class="section-tag">实时洞察</p>
+      <h2>按不同分组方式查看平台识别到的重点人群分布</h2>
+    </div>
+    <div class="chip-row">
+      <button class="chip-button is-active" data-home-group="age_band">按年龄</button>
+      <button class="chip-button" data-home-group="income_band">按收入</button>
+      <button class="chip-button" data-home-group="gender">按性别</button>
+    </div>
+  </div>
+  <div class="live-grid" data-home-profile data-current-group="age_band">
+    <div class="profile-bars" data-profile-bars>
+      {% for row in profile.rows[:4] %}
+      <div class="bar-item">
+        <div class="bar-label">
+          <span>{{ row.group }}</span>
+          <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: {{ row.elevated_priority_rate_pct or 0 }}%"></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="api-preview">
+      <div class="code-topline">平台实时数据来源</div>
+      <pre data-home-json><code>{{ profile_json }}</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="section-shell section-grid-two">
+  <article class="panel reveal-on-scroll">
+    <p class="section-tag">重点关注对象</p>
+    <h2>当前最值得优先纳入筛查与服务规划的人群组合</h2>
+    <div class="cohort-stack">
+      {% for row in cohorts.rows[:4] %}
+      <article class="cohort-card">
+        <div class="cohort-title">{{ row.age_band }} / {{ row.gender }} / {{ row.income_band }}</div>
+        <div class="cohort-meta">{{ row.participants }} 人样本</div>
+        <div class="metric-inline">
+          <span>短睡眠</span>
+          <strong>{{ row.short_sleep_rate_pct }}%</strong>
+        </div>
+        <div class="metric-inline">
+          <span>高优先级</span>
+          <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel panel-dark reveal-on-scroll">
+    <p class="section-tag">机构决策摘要</p>
+    <h2>{{ manager_report.headline }}</h2>
+    <ul class="clean-list light">
+      {% for point in manager_report.focus_points %}
+      <li>{{ point }}</li>
+      {% endfor %}
+    </ul>
+    <a class="button button-light" href="/reports">进入报告中心</a>
+  </article>
+</section>
+
+<section class="section-shell cta-ribbon reveal-on-scroll">
+  <div>
+    <p class="section-tag">立即体验</p>
+    <h2>从人群画像到机构简报，一站式查看平台能力</h2>
+    <p>进入平台演示页，按不同分组方式查看人群分布、重点群体和实时洞察结果。</p>
+  </div>
+  <div class="cta-actions">
+    <a class="button button-primary" href="/studio">进入平台演示</a>
+    <a class="button button-secondary" href="/reports">查看机构简报</a>
+  </div>
+</section>
+{% endblock %}

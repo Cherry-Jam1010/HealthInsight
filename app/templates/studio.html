@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}HealthInsight | 平台演示{% endblock %}
+
+{% block content %}
+<section class="page-hero section-shell">
+  <p class="eyebrow">Platform Demo</p>
+  <h1>实时查看平台如何呈现人群画像与重点群体识别结果。</h1>
+  <p class="hero-lead">
+    这里提供的是机构用户可理解的动态演示界面。你可以按不同分组方式查看画像结果、
+    重点群体和实时返回内容，快速感受平台的洞察能力。
+  </p>
+</section>
+
+<section class="section-shell studio-layout" data-studio-root>
+  <aside class="studio-sidebar panel reveal-on-scroll">
+    <p class="section-tag">演示控制台</p>
+    <form class="control-form" data-profile-form>
+      <label>
+        分组维度
+        <select name="group_by">
+          <option value="age_band">年龄层</option>
+          <option value="income_band">收入层</option>
+          <option value="gender">性别</option>
+          <option value="race_ethnicity">族裔</option>
+          <option value="priority_tier">优先级层级</option>
+        </select>
+      </label>
+      <label>
+        最小样本量
+        <input type="number" name="min_participants" value="80" min="10" max="500" />
+      </label>
+      <label>
+        年龄下限
+        <input type="number" name="min_age" value="18" min="18" max="80" />
+      </label>
+      <label>
+        年龄上限
+        <input type="number" name="max_age" value="80" min="18" max="80" />
+      </label>
+      <button type="submit" class="button button-primary wide">刷新画像</button>
+    </form>
+
+    <div class="endpoint-mini-list">
+      <button class="endpoint-pick is-active" type="button" data-endpoint-target="/api/v1/summary">
+        平台总览
+      </button>
+      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/population-profile?group_by=age_band">
+        人群画像
+      </button>
+      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/priority-cohorts">
+        重点群体
+      </button>
+    </div>
+  </aside>
+
+  <div class="studio-main">
+    <section class="metric-board reveal-on-scroll">
+      <article class="metric-tile">
+        <span>短睡眠率</span>
+        <strong data-summary-short-sleep>{{ summary.behavioral_signals.short_sleep_rate_pct }}%</strong>
+      </article>
+      <article class="metric-tile">
+        <span>高久坐率</span>
+        <strong data-summary-sedentary>{{ summary.behavioral_signals.high_sedentary_rate_pct }}%</strong>
+      </article>
+      <article class="metric-tile">
+        <span>重点关注占比</span>
+        <strong data-summary-elevated>{{ summary.behavioral_signals.elevated_rate_pct }}%</strong>
+      </article>
+      <article class="metric-tile">
+        <span>合并样本量</span>
+        <strong data-summary-rows>{{ summary.sample.merged_adult_rows }}</strong>
+      </article>
+    </section>
+
+    <section class="studio-panels">
+      <article class="panel reveal-on-scroll">
+        <div class="section-heading spread compact">
+          <div>
+            <p class="section-tag">画像结果</p>
+            <h2>当前分组人群对比</h2>
+          </div>
+          <span class="status-dot" data-profile-status>已载入</span>
+        </div>
+        <div class="visual-list" data-profile-bars></div>
+      </article>
+
+      <article class="panel panel-dark reveal-on-scroll">
+        <div class="section-heading spread compact">
+          <div>
+            <p class="section-tag">实时结果</p>
+            <h2>平台返回内容</h2>
+          </div>
+          <span class="api-path" data-endpoint-label>/api/v1/summary</span>
+        </div>
+        <pre class="dark-pre" data-live-json><code>{{ summary_json }}</code></pre>
+      </article>
+    </section>
+
+    <section class="panel reveal-on-scroll">
+      <div class="section-heading spread compact">
+        <div>
+          <p class="section-tag">重点群体</p>
+          <h2>当前最值得优先关注的人群组合</h2>
+        </div>
+        <button class="ghost-chip" type="button" data-refresh-cohorts>刷新结果</button>
+      </div>
+      <div class="cohort-board" data-cohort-board>
+        {% for row in cohorts.rows %}
+        <article class="cohort-card">
+          <div class="cohort-title">{{ row.age_band }} / {{ row.gender }} / {{ row.income_band }}</div>
+          <div class="cohort-meta">{{ row.participants }} 人样本</div>
+          <div class="metric-inline">
+            <span>短睡眠</span>
+            <strong>{{ row.short_sleep_rate_pct }}%</strong>
+          </div>
+          <div class="metric-inline">
+            <span>高优先级</span>
+            <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</section>
+{% endblock %}

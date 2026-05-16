@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}HealthInsight | 决策简报{% endblock %}
+
+{% block content %}
+<section class="page-hero section-shell">
+  <p class="eyebrow">Decision Briefing</p>
+  <h1>同一份分析结果，可面向不同机构角色输出不同的阅读版本。</h1>
+  <p class="hero-lead">
+    不同团队关注的信息重点并不相同。平台可按研究、管理、临床与技术视角组织同一份结果，
+    让分析结论更容易被机构内部理解和使用。
+  </p>
+</section>
+
+<section class="section-shell report-layout" data-report-root>
+  <div class="report-tabs">
+    <button class="chip-button is-active" type="button" data-audience="researcher">研究团队</button>
+    <button class="chip-button" type="button" data-audience="manager">管理团队</button>
+    <button class="chip-button" type="button" data-audience="clinical">临床团队</button>
+    <button class="chip-button" type="button" data-audience="engineering">技术团队</button>
+  </div>
+
+  <div class="section-grid-two">
+    <article class="panel panel-dark reveal-on-scroll">
+      <p class="section-tag">当前简报</p>
+      <h2 data-report-headline>{{ initial_report.headline }}</h2>
+      <ul class="clean-list light" data-report-focus>
+        {% for point in initial_report.focus_points %}
+        <li>{{ point }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="panel reveal-on-scroll">
+      <p class="section-tag">使用说明</p>
+      <ul class="clean-list" data-report-notes>
+        {% for note in initial_report.shared_notes %}
+        <li>{{ note }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </div>
+
+  <section class="panel reveal-on-scroll">
+    <div class="section-heading compact">
+      <p class="section-tag">重点对象</p>
+      <h2>当前角色需要优先关注的人群</h2>
+    </div>
+    <div class="cohort-board" data-report-cohorts>
+      {% for row in initial_report.top_cohorts %}
+      <article class="cohort-card">
+        <div class="cohort-title">{{ row.age_band }} / {{ row.gender }} / {{ row.income_band }}</div>
+        <div class="cohort-meta">{{ row.participants }} 人样本</div>
+        <div class="metric-inline">
+          <span>短睡眠</span>
+          <strong>{{ row.short_sleep_rate_pct }}%</strong>
+        </div>
+        <div class="metric-inline">
+          <span>高优先级</span>
+          <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="panel reveal-on-scroll">
+    <div class="section-heading spread compact">
+      <div>
+        <p class="section-tag">实时结果</p>
+        <h2>当前简报返回内容</h2>
+      </div>
+      <span class="api-path" data-report-endpoint>/api/v1/reports/researcher</span>
+    </div>
+    <pre class="dark-pre subtle" data-report-json><code>{{ initial_report_json }}</code></pre>
+  </section>
+</section>
+{% endblock %}
