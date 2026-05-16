@@ -488,6 +488,22 @@ h3 {
   gap: 14px;
 }
 
+.section-heading.spread.compact {
+  flex-wrap: wrap;
+}
+
+.section-heading.spread.compact > div {
+  min-width: 0;
+  flex: 1 1 240px;
+}
+
+.section-heading.spread.compact .api-path,
+.section-heading.spread.compact .status-dot {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .panel,
 .interactive-panel,
 .cta-ribbon,
