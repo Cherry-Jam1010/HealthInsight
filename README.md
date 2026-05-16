@@ -221,6 +221,6 @@ https://你的用户名-healthinsight.hf.space
 
 ### 注意事项
 
-- 这个工作流会先把 `HF_SPACE_README.md` 复制成 Space 需要的 `README.md`，再上传到 Hugging Face。
-- `hub-sync` 是文件同步，不是 git 仓库对推；根据 Hugging Face 官方文档，它会自动排除 `.github/` 和 `.git/` 目录。
+- 这个工作流会先把 `HF_SPACE_README.md` 复制成 Space 需要的 `README.md`，再推送到 Hugging Face。
+- 工作流会在 GitHub Runner 中生成一个临时同步目录，并自动排除 `.github/` 和 `.git/` 目录。
 - 如果仓库里将来出现超过 `10MB` 的大文件，按 Hugging Face 官方说明，需要改用 Git LFS。
