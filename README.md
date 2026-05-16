@@ -147,3 +147,80 @@ data/                    # NHANES 数据
 - Health Check: `/api/v1/health`
 
 如果你只是想最快把网站分享出去，推荐先部署到 Render。
+
+## 部署到 Hugging Face Spaces
+
+如果你还是想用 Hugging Face，这个仓库已经准备好了 Docker Space 所需文件：
+
+- `Dockerfile`
+- `HF_SPACE_README.md`
+- `.github/workflows/sync-to-hf-space.yml`
+
+这套方案不要求你在本机直接 `git push` 到 Hugging Face，而是让 GitHub Actions 自动把 `main` 分支同步到你的 Space，适合本机网络连不上 `huggingface.co` 的情况。
+
+### 第一步：创建 Space
+
+在 Hugging Face 网页里创建一个新的 Space：
+
+- Space 类型选择 `Docker`
+- Space 名称建议使用 `healthinsight`
+- 可见性先选 `Public`
+
+如果你后面想对外公开分享网站，`Public` 最省事。
+
+### 第二步：创建 Hugging Face Token
+
+打开 Hugging Face 的 Token 页面，创建一个带 `write` 权限的访问令牌。这个令牌后面会配置到 GitHub 的仓库密钥里。
+
+### 第三步：在 GitHub 配置自动同步
+
+打开你的 GitHub 仓库：
+
+- `Settings`
+- `Secrets and variables`
+- `Actions`
+
+先添加一个 Secret：
+
+- Name: `HF_TOKEN`
+- Value: 你刚刚创建的 Hugging Face write token
+
+再添加一个 Variable：
+
+- Name: `HF_SPACE_ID`
+- Value: `你的 Hugging Face 用户名/healthinsight`
+
+例如：
+
+```text
+Cherry1010/healthinsight
+```
+
+### 第四步：触发同步
+
+只要你把代码推到 GitHub 的 `main` 分支，这个工作流就会自动运行，把当前仓库内容同步到你的 Hugging Face Space。
+
+你也可以在 GitHub 的 `Actions` 页面里手动运行：
+
+- `Sync to Hugging Face Space`
+- `Run workflow`
+
+### 第五步：等待 Space 构建
+
+同步完成后，Hugging Face 会自动开始构建 Docker Space。构建成功后，你就可以通过下面这个地址访问网站：
+
+```text
+https://huggingface.co/spaces/你的用户名/healthinsight
+```
+
+通常也会有一个直接访问应用的子域名：
+
+```text
+https://你的用户名-healthinsight.hf.space
+```
+
+### 注意事项
+
+- 这个工作流会先把 `HF_SPACE_README.md` 复制成 Space 需要的 `README.md`，再上传到 Hugging Face。
+- `hub-sync` 是文件同步，不是 git 仓库对推；根据 Hugging Face 官方文档，它会自动排除 `.github/` 和 `.git/` 目录。
+- 如果仓库里将来出现超过 `10MB` 的大文件，按 Hugging Face 官方说明，需要改用 Git LFS。
