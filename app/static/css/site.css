@@ -728,6 +728,10 @@ pre {
   border: 1px solid var(--line);
 }
 
+.guide-timeline {
+  grid-template-columns: 1fr;
+}
+
 .timeline span {
   display: inline-block;
   margin-bottom: 12px;
@@ -899,10 +903,6 @@ pre {
 
 .compact-timeline article {
   min-height: 100%;
-}
-
-.guide-timeline {
-  grid-template-columns: 1fr;
 }
 
 .example-endpoints {

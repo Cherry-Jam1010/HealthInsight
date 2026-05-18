@@ -96,10 +96,6 @@ DEFAULT_MENTAL_DATA_BASE_URL = os.getenv(
     "HEALTHINSIGHT_MH_DATA_BASE_URL",
     "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2021/DataFiles",
 )
-DEFAULT_LEGACY_DATA_BASE_URL = os.getenv(
-    "HEALTHINSIGHT_LEGACY_DATA_BASE_URL",
-    "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles",
-)
 
 
 @dataclass(frozen=True)
@@ -220,18 +216,16 @@ class NHANESAnalyticsService:
             self._download_data_file(base_url, filename, self.current_data_dir)
 
     def _ensure_legacy_files(self) -> None:
-        self.legacy_data_dir.mkdir(parents=True, exist_ok=True)
         missing = [
             dataset.filename
             for dataset in self.legacy_datasets
             if not (self.legacy_data_dir / dataset.filename).exists()
         ]
-        if not missing:
-            return
-
-        base_url = DEFAULT_LEGACY_DATA_BASE_URL.rstrip("/")
-        for filename in missing:
-            self._download_data_file(base_url, filename, self.legacy_data_dir)
+        if missing:
+            joined = ", ".join(missing)
+            raise RuntimeError(
+                f"缺少历史基线文件：{joined}。请确认这些文件位于 data 目录。"
+            )
 
     def _download_data_file(self, base_url: str, filename: str, target_dir: Path) -> None:
         target_path = target_dir / filename

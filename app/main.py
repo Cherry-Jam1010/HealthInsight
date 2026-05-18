@@ -11,6 +11,8 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Redirect
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.analytics import NHANESAnalyticsService
+
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
@@ -54,9 +56,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
 @lru_cache
-def get_service() -> Any:
-    from app.analytics import NHANESAnalyticsService
-
+def get_service() -> NHANESAnalyticsService:
     return NHANESAnalyticsService(PROJECT_DIR)
 
 
@@ -103,68 +103,27 @@ async def handle_http_error(_: Request, exc: HTTPException) -> JSONResponse:
 
 @app.get("/", response_class=HTMLResponse, tags=["Site"])
 async def homepage(request: Request) -> HTMLResponse:
-    return HTMLResponse(
-        """
-        <!DOCTYPE html>
-        <html lang="zh-CN">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>HealthInsight</title>
-            <style>
-              body {
-                margin: 0;
-                padding: 48px 24px;
-                font-family: Arial, sans-serif;
-                background: #f4f8f8;
-                color: #173843;
-              }
-              .shell {
-                max-width: 900px;
-                margin: 0 auto;
-                background: #ffffff;
-                border-radius: 20px;
-                padding: 36px;
-                box-shadow: 0 16px 40px rgba(20, 56, 67, 0.08);
-              }
-              h1 {
-                margin-top: 0;
-              }
-              .links {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-                margin-top: 24px;
-              }
-              a {
-                display: inline-block;
-                padding: 12px 16px;
-                border-radius: 999px;
-                background: #0c7a77;
-                color: white;
-                text-decoration: none;
-              }
-              a.secondary {
-                background: #d7ece8;
-                color: #173843;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="shell">
-              <h1>HealthInsight</h1>
-              <p>机构级心理健康风险洞察平台。</p>
-              <p>如果首页可以打开，说明应用已经正常启动。后续可继续访问使用指南、在线演示和接口文档。</p>
-              <div class="links">
-                <a href="/guide">使用指南</a>
-                <a href="/studio">在线演示</a>
-                <a href="/reports">报告中心</a>
-                <a class="secondary" href="/docs">接口文档</a>
-              </div>
-            </div>
-          </body>
-        </html>
-        """
+    service = get_service()
+    summary = service.summary()
+    cohorts = service.priority_cohorts(limit=6, min_participants=100)
+    manager_report = service.audience_report("manager")
+    risk_factors = service.risk_factors(limit=4, min_participants=120)
+    profile = service.population_profile("age_band", min_participants=100)
+    comparison = service.cycle_comparison("age_band", min_participants=100)
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context=page_context(
+            "home",
+            summary=summary,
+            cohorts=cohorts,
+            manager_report=manager_report,
+            risk_factors=risk_factors,
+            profile=profile,
+            comparison=comparison,
+            profile_json=json.dumps(profile, ensure_ascii=False, indent=2),
+            comparison_json=json.dumps(comparison, ensure_ascii=False, indent=2),
+        ),
     )
 
 
