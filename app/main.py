@@ -11,8 +11,6 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Redirect
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.analytics import NHANESAnalyticsService
-
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
@@ -56,7 +54,9 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
 @lru_cache
-def get_service() -> NHANESAnalyticsService:
+def get_service() -> Any:
+    from app.analytics import NHANESAnalyticsService
+
     return NHANESAnalyticsService(PROJECT_DIR)
 
 
