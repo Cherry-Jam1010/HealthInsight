@@ -1,171 +1,70 @@
 {% extends "base.html" %}
 
-{% block title %}HealthInsight | 机构级心理健康洞察平台{% endblock %}
+{% block title %}HealthInsight | 首页{% endblock %}
 
 {% block content %}
-<section class="hero hero-home section-shell">
-  <div class="hero-copy">
-    <p class="eyebrow">Mental Health Insight Platform</p>
-    <h1>更快看清哪些人群更需要心理健康筛查与支持。</h1>
-    <p class="hero-lead">
-      HealthInsight 把当前 PHQ-9 风险数据和历史行为基线放到同一套平台里，
-      帮机构快速完成重点人群识别、风险沟通、阈值模拟和管理汇报。
-    </p>
-    <div class="hero-actions">
-      <a class="button button-primary" href="/studio">在线演示</a>
-      <a class="button button-secondary" href="/examples">查看实例</a>
-    </div>
-    <div class="hero-badges">
-      <span>PHQ-9 风险识别</span>
-      <span>双周期对照</span>
-      <span>阈值模拟</span>
-    </div>
+<section class="page-hero section-shell">
+  <p class="eyebrow">HealthInsight</p>
+  <h1>机构级心理健康风险洞察平台</h1>
+  <p class="hero-lead">
+    平台结合当前心理健康风险数据与历史行为基线数据，帮助机构完成重点人群识别、
+    风险沟通、阈值模拟和管理汇报。
+  </p>
+  <div class="hero-actions">
+    <a class="button button-primary" href="/guide">查看使用指南</a>
+    <a class="button button-secondary" href="/studio">打开在线演示</a>
   </div>
-  <div class="hero-visual">
-    <article class="glass-card stat-card float-a">
-      <span>当前 PHQ 完整样本</span>
-      <strong>{{ summary.sample.phq_complete_rows }}</strong>
-      <small>可直接计算 PHQ-9 的成人样本</small>
-    </article>
-    <article class="glass-card stat-card float-b">
-      <span>PHQ-9 高风险率</span>
-      <strong>{{ summary.mental_health_signals.phq_high_risk_rate_pct }}%</strong>
-      <small>当前周期加权筛查风险</small>
-    </article>
-    <article class="glass-card stat-card wide-card">
-      <span>双数据引擎</span>
-      <strong>当前风险 + 历史基线</strong>
-      <small>用同一平台看风险、睡眠和行为背景</small>
-    </article>
-    <div class="signal-lines">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </div>
-</section>
-
-<section class="section-shell section-grid">
-  <article class="panel panel-accent reveal-on-scroll">
-    <p class="section-tag">一句话价值</p>
-    <h2>把公开健康数据变成机构能直接使用的筛查支持工具。</h2>
-    <p>
-      你不需要先读数据字典，也不需要自己拼接分析流程。
-      平台已经把 PHQ-9 风险、睡眠、收入、BMI 和慢病负担整理成可以直接查看的结果。
-    </p>
-  </article>
-  <article class="panel reveal-on-scroll">
-    <p class="section-tag">适合谁用</p>
-    <ul class="clean-list">
-      <li>公共卫生团队：看清重点人群和风险差异。</li>
-      <li>心理健康机构：安排筛查、外展和资源配置。</li>
-      <li>医院与管理部门：更快形成汇报和行动优先级。</li>
-    </ul>
-  </article>
 </section>
 
 <section class="section-shell">
-  <div class="section-heading">
-    <p class="section-tag">核心能力</p>
-    <h2>四件事，足够支撑大多数机构的第一轮决策。</h2>
-  </div>
-  <div class="feature-grid">
-    <article class="feature-card reveal-on-scroll">
-      <h3>看清风险</h3>
-      <p>直接查看不同人群的 PHQ-9 高风险分布。</p>
+  <div class="metric-board">
+    <article class="metric-tile reveal-on-scroll">
+      <span>PHQ-9 高风险率</span>
+      <strong>{{ summary.mental_health_signals.phq_high_risk_rate_pct }}%</strong>
     </article>
-    <article class="feature-card reveal-on-scroll">
-      <h3>找到重点</h3>
-      <p>识别最值得优先筛查和外展的人群组合。</p>
+    <article class="metric-tile reveal-on-scroll">
+      <span>平均 PHQ-9</span>
+      <strong>{{ summary.mental_health_signals.mean_phq9_score }}</strong>
     </article>
-    <article class="feature-card reveal-on-scroll">
-      <h3>估算资源</h3>
-      <p>用阈值模拟快速估算筛出量和承接压力。</p>
+    <article class="metric-tile reveal-on-scroll">
+      <span>当前短睡眠率</span>
+      <strong>{{ summary.shared_signals.current_short_sleep_rate_pct }}%</strong>
     </article>
-    <article class="feature-card reveal-on-scroll">
-      <h3>补足背景</h3>
-      <p>用历史睡眠和活动基线帮助解释当前风险。</p>
+    <article class="metric-tile reveal-on-scroll">
+      <span>历史短睡眠率</span>
+      <strong>{{ summary.shared_signals.legacy_short_sleep_rate_pct }}%</strong>
     </article>
   </div>
 </section>
 
 <section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">双数据源</p>
-    <h2>现在的风险结果，配合历史行为基线一起看。</h2>
-    <div class="metric-board compact-metrics">
-      <article class="metric-tile">
-        <span>当前短睡眠率</span>
-        <strong>{{ summary.shared_signals.current_short_sleep_rate_pct }}%</strong>
-      </article>
-      <article class="metric-tile">
-        <span>历史短睡眠率</span>
-        <strong>{{ summary.shared_signals.legacy_short_sleep_rate_pct }}%</strong>
-      </article>
-      <article class="metric-tile">
-        <span>历史不活跃率</span>
-        <strong>{{ summary.baseline_behavior_signals.legacy_inactive_rate_pct }}%</strong>
-      </article>
-      <article class="metric-tile">
-        <span>短睡眠变化</span>
-        <strong>{{ summary.shared_signals.short_sleep_gap_pct_point }}pt</strong>
-      </article>
-    </div>
-    <p>
-      当前周期负责识别 PHQ-9 风险，历史周期负责补充睡眠和活动背景。
-      这能让机构不只知道“谁风险更高”，也更容易解释“为什么值得优先关注”。
-    </p>
-  </article>
-
-  <article class="panel panel-dark reveal-on-scroll">
-    <p class="section-tag">管理摘要</p>
-    <h2>{{ manager_report.headline }}</h2>
-    <ul class="clean-list light">
-      {% for point in manager_report.focus_points %}
-      <li>{{ point }}</li>
-      {% endfor %}
+    <p class="section-tag">平台能做什么</p>
+    <h2>四类核心能力</h2>
+    <ul class="clean-list">
+      <li>识别不同人群的 PHQ-9 风险分布。</li>
+      <li>发现最值得优先筛查和外展的人群组合。</li>
+      <li>模拟不同阈值下的筛出量与承接压力。</li>
+      <li>用历史睡眠和活动基线解释当前风险背景。</li>
     </ul>
-    <a class="button button-light" href="/reports">查看完整简报</a>
   </article>
-</section>
 
-<section class="section-shell interactive-panel reveal-on-scroll">
-  <div class="section-heading spread">
-    <div>
-      <p class="section-tag">实时画像</p>
-      <h2>不同人群的 PHQ-9 高风险分布</h2>
-    </div>
-    <div class="chip-row">
-      <button class="chip-button is-active" data-home-group="age_band">按年龄</button>
-      <button class="chip-button" data-home-group="income_band">按收入</button>
-      <button class="chip-button" data-home-group="sleep_band">按睡眠</button>
-    </div>
-  </div>
-  <div class="live-grid" data-home-profile data-current-group="age_band">
-    <div class="profile-bars" data-profile-bars>
-      {% for row in profile.rows[:4] %}
-      <div class="bar-item">
-        <div class="bar-label">
-          <span>{{ row.group }}</span>
-          <strong>{{ row.high_risk_rate_pct }}%</strong>
-        </div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width: {{ row.high_risk_rate_pct or 0 }}%"></div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    <div class="api-preview">
-      <div class="code-topline">实时接口返回</div>
-      <pre data-home-json><code>{{ profile_json }}</code></pre>
-    </div>
-  </div>
+  <article class="panel panel-accent reveal-on-scroll">
+    <p class="section-tag">适合谁用</p>
+    <h2>面向机构团队的统一入口</h2>
+    <ul class="clean-list">
+      <li>公共卫生团队</li>
+      <li>心理健康机构</li>
+      <li>医院与管理部门</li>
+      <li>研究与技术团队</li>
+    </ul>
+  </article>
 </section>
 
 <section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">重点对象</p>
-    <h2>当前最值得优先纳入筛查的人群组合</h2>
+    <p class="section-tag">重点人群</p>
+    <h2>当前最值得优先关注的人群组合</h2>
     <div class="cohort-stack">
       {% for row in cohorts.rows[:4] %}
       <article class="cohort-card">
@@ -185,8 +84,8 @@
   </article>
 
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">双周期快照</p>
-    <h2>同一类人群，当前风险与历史睡眠背景一起看</h2>
+    <p class="section-tag">双周期对照</p>
+    <h2>当前风险与历史睡眠背景</h2>
     <div class="cohort-stack">
       {% for row in comparison.rows[:4] %}
       <article class="cohort-card">
@@ -210,46 +109,36 @@
 
 <section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">风险线索</p>
-    <h2>哪些因素分层最值得优先关注</h2>
-    <div class="cohort-stack">
-      {% for row in risk_factors.rows %}
-      <article class="cohort-card">
-        <div class="cohort-title">{{ row.dimension }} / {{ row.group }}</div>
-        <div class="cohort-meta">{{ row.participants }} 人有效样本</div>
-        <div class="metric-inline">
-          <span>高风险率</span>
-          <strong>{{ row.high_risk_rate_pct }}%</strong>
-        </div>
-        <div class="metric-inline">
-          <span>高于总体</span>
-          <strong>{{ row.uplift_vs_overall_pct_point }}pt</strong>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
+    <p class="section-tag">使用建议</p>
+    <h2>第一次使用建议顺序</h2>
+    <ol class="clean-list">
+      <li>先看使用指南 `/guide`。</li>
+      <li>再看在线演示 `/studio`。</li>
+      <li>然后打开报告中心 `/reports`。</li>
+      <li>最后根据需要接入 `/docs` 中的 API。</li>
+    </ol>
   </article>
 
-  <article class="panel panel-accent reveal-on-scroll">
-    <p class="section-tag">下一步怎么用</p>
-    <h2>先用平台看清风险，再决定筛查节奏和资源投入。</h2>
-    <ul class="clean-list">
-      <li>进入在线演示：直接查看接口和实时结果。</li>
-      <li>进入落地实例：看看不同机构怎么使用这些结论。</li>
-      <li>进入报告中心：按研究、管理和临床视角切换输出。</li>
+  <article class="panel panel-dark reveal-on-scroll">
+    <p class="section-tag">管理摘要</p>
+    <h2>{{ manager_report.headline }}</h2>
+    <ul class="clean-list light">
+      {% for point in manager_report.focus_points %}
+      <li>{{ point }}</li>
+      {% endfor %}
     </ul>
   </article>
 </section>
 
 <section class="section-shell cta-ribbon reveal-on-scroll">
   <div>
-    <p class="section-tag">立即体验</p>
-    <h2>从风险画像到阈值模拟，一次看清平台能做什么。</h2>
-    <p>如果你要给客户、老师或团队展示产品，现在就可以直接进入演示页。</p>
+    <p class="section-tag">继续浏览</p>
+    <h2>先看指南，再看演示，最后再接接口。</h2>
+    <p>如果首页可以正常运行，后续页面和 API 才更适合继续验证。</p>
   </div>
   <div class="cta-actions">
-    <a class="button button-primary" href="/studio">打开演示</a>
-    <a class="button button-secondary" href="/vision">查看全球视野</a>
+    <a class="button button-primary" href="/guide">打开指南</a>
+    <a class="button button-secondary" href="/docs">打开接口文档</a>
   </div>
 </section>
 {% endblock %}
