@@ -29,6 +29,7 @@ NAV_ITEMS = [
     {"key": "home", "label": "首页", "href": "/"},
     {"key": "scenarios", "label": "应用场景", "href": "/scenarios"},
     {"key": "examples", "label": "落地实例", "href": "/examples"},
+    {"key": "guide", "label": "使用指南", "href": "/guide"},
     {"key": "studio", "label": "在线演示", "href": "/studio"},
     {"key": "reports", "label": "报告中心", "href": "/reports"},
     {"key": "vision", "label": "全球视野", "href": "/vision"},
@@ -178,6 +179,24 @@ async def examples_page(request: Request) -> HTMLResponse:
             summary=summary,
             cohorts=cohorts,
             manager_report=manager_report,
+        ),
+    )
+
+
+@app.get("/guide", response_class=HTMLResponse, tags=["Site"])
+async def guide_page(request: Request) -> HTMLResponse:
+    service = get_service()
+    summary = service.summary()
+    comparison = service.cycle_comparison("age_band", min_participants=100)
+    return templates.TemplateResponse(
+        request=request,
+        name="guide.html",
+        context=page_context(
+            "guide",
+            summary=summary,
+            comparison=comparison,
+            summary_json=json.dumps(summary, ensure_ascii=False, indent=2),
+            comparison_json=json.dumps(comparison, ensure_ascii=False, indent=2),
         ),
     )
 

@@ -556,6 +556,10 @@ h3 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.guide-feature-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .scenario-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -895,6 +899,10 @@ pre {
 
 .compact-timeline article {
   min-height: 100%;
+}
+
+.guide-timeline {
+  grid-template-columns: 1fr;
 }
 
 .example-endpoints {
