@@ -8,7 +8,7 @@
   <h1>不是“看接口”，而是直接理解平台能替你的团队完成什么工作。</h1>
   <p class="hero-lead">
     我们把平台能力拆成真实机构会经历的三个典型实例。你可以像产品用户一样，
-    直接看到问题、分析动作、交付结果和最终能拿去推进决策的内容。
+    直接看到问题、PHQ-9 风险分析动作、交付结果和最终能拿去推进决策的内容。
   </p>
 </section>
 
@@ -42,10 +42,10 @@
         <span class="status-dot" data-example-badge>机构运营场景</span>
       </div>
       <p class="hero-lead example-lead" data-example-summary>
-        团队需要在有限预算下安排下一轮筛查与外展服务，希望先看清哪些群体同时呈现短睡眠、久坐和低收入信号。
+        团队需要在有限预算下安排下一轮筛查与外展服务，希望先看清哪些群体同时呈现 PHQ-9 高风险、睡眠不足和经济压力信号。
       </p>
       <div class="hero-badges" data-example-tags>
-        <span>重点人群识别</span>
+        <span>PHQ-9 风险分层</span>
         <span>筛查优先级排序</span>
         <span>管理汇报摘要</span>
       </div>
@@ -59,17 +59,17 @@
           <article>
             <span>Step 1</span>
             <h3>读取样本</h3>
-            <p>先从人口学、睡眠和活动数据里建立分析基础。</p>
+            <p>先从人口学、PHQ-9、睡眠、BMI 和慢病数据里建立分析基础。</p>
           </article>
           <article>
             <span>Step 2</span>
             <h3>识别重点群体</h3>
-            <p>按年龄、收入和行为信号定位优先筛查对象。</p>
+            <p>按年龄、收入、睡眠和慢病负担定位优先筛查对象。</p>
           </article>
           <article>
             <span>Step 3</span>
             <h3>生成机构简报</h3>
-            <p>把结果整理成管理团队能快速理解的语言。</p>
+            <p>把 PHQ-9 风险结果整理成管理团队能快速理解的语言。</p>
           </article>
         </div>
       </article>
@@ -79,7 +79,7 @@
         <h2 data-example-outcome-title>一份可直接进入周会讨论的优先级名单</h2>
         <ul class="clean-list light" data-example-outcomes>
           <li>优先筛查群体组合列表</li>
-          <li>重点信号占比与说明</li>
+          <li>PHQ-9 高风险占比与说明</li>
           <li>适合管理层阅读的摘要语言</li>
         </ul>
         <div class="hero-badges example-endpoints" data-example-endpoints>
@@ -95,20 +95,20 @@
         <h2>平台当前已经能给出的机构级证据</h2>
         <div class="metric-board compact-metrics">
           <article class="metric-tile">
-            <span>合并样本量</span>
+            <span>成人样本量</span>
             <strong>{{ summary.sample.merged_adult_rows }}</strong>
           </article>
           <article class="metric-tile">
-            <span>短睡眠率</span>
-            <strong>{{ summary.behavioral_signals.short_sleep_rate_pct }}%</strong>
+            <span>PHQ-9 高风险</span>
+            <strong>{{ summary.mental_health_signals.phq_high_risk_rate_pct }}%</strong>
           </article>
           <article class="metric-tile">
-            <span>高久坐率</span>
-            <strong>{{ summary.behavioral_signals.high_sedentary_rate_pct }}%</strong>
+            <span>PHQ 完整率</span>
+            <strong>{{ summary.coverage.phq_complete_pct }}%</strong>
           </article>
           <article class="metric-tile">
-            <span>重点关注占比</span>
-            <strong>{{ summary.behavioral_signals.elevated_rate_pct }}%</strong>
+            <span>平均 PHQ-9</span>
+            <strong>{{ summary.mental_health_signals.mean_phq9_score }}</strong>
           </article>
         </div>
       </article>
@@ -119,15 +119,15 @@
         <div class="cohort-stack">
           {% for row in cohorts.rows %}
           <article class="cohort-card">
-            <div class="cohort-title">{{ row.age_band }} / {{ row.gender }} / {{ row.income_band }}</div>
+            <div class="cohort-title">{{ row.segment_label }}</div>
             <div class="cohort-meta">{{ row.participants }} 人样本</div>
             <div class="metric-inline">
-              <span>短睡眠</span>
-              <strong>{{ row.short_sleep_rate_pct }}%</strong>
+              <span>PHQ-9 高风险</span>
+              <strong>{{ row.high_risk_rate_pct }}%</strong>
             </div>
             <div class="metric-inline">
-              <span>高优先级</span>
-              <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+              <span>平均 PHQ-9</span>
+              <strong>{{ row.mean_phq9_score }}</strong>
             </div>
           </article>
           {% endfor %}

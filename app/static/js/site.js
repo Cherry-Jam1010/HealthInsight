@@ -34,8 +34,8 @@ function initMobileNav() {
 }
 
 function createBarRow(row) {
-  const group = row.group || `${row.age_band} / ${row.gender} / ${row.income_band}`;
-  const rate = row.elevated_priority_rate_pct ?? 0;
+  const group = row.group || row.segment_label || `${row.age_band} / ${row.income_band} / ${row.sleep_band}`;
+  const rate = row.high_risk_rate_pct ?? row.elevated_priority_rate_pct ?? 0;
   return `
     <div class="bar-item">
       <div class="bar-label">
@@ -49,18 +49,42 @@ function createBarRow(row) {
   `;
 }
 
+function createCohortTitle(row) {
+  return row.segment_label || `${row.age_band} / ${row.income_band} / ${row.sleep_band || row.gender}`;
+}
+
 function createCohortCard(row) {
+  const primaryMetric = row.high_risk_rate_pct ?? row.elevated_priority_rate_pct;
+  const secondaryMetric = row.mean_phq9_score ?? row.short_sleep_rate_pct;
+  const secondaryLabel = row.mean_phq9_score != null ? "平均 PHQ-9" : "短睡眠";
   return `
     <article class="cohort-card">
-      <div class="cohort-title">${row.age_band} / ${row.gender} / ${row.income_band}</div>
+      <div class="cohort-title">${createCohortTitle(row)}</div>
       <div class="cohort-meta">${row.participants} 人样本</div>
       <div class="metric-inline">
-        <span>短睡眠</span>
-        <strong>${row.short_sleep_rate_pct}%</strong>
+        <span>PHQ-9 高风险</span>
+        <strong>${primaryMetric}%</strong>
       </div>
       <div class="metric-inline">
-        <span>高优先级</span>
-        <strong>${row.elevated_priority_rate_pct}%</strong>
+        <span>${secondaryLabel}</span>
+        <strong>${secondaryMetric}${row.mean_phq9_score != null ? "" : "%"}</strong>
+      </div>
+    </article>
+  `;
+}
+
+function createRiskFactorCard(row) {
+  return `
+    <article class="cohort-card">
+      <div class="cohort-title">${row.dimension} / ${row.group}</div>
+      <div class="cohort-meta">${row.participants} 人有效样本</div>
+      <div class="metric-inline">
+        <span>高风险率</span>
+        <strong>${row.high_risk_rate_pct}%</strong>
+      </div>
+      <div class="metric-inline">
+        <span>高于总体</span>
+        <strong>${row.uplift_vs_overall_pct_point}pt</strong>
       </div>
     </article>
   `;
@@ -106,6 +130,14 @@ function initStudio() {
   const endpointLabel = root.querySelector("[data-endpoint-label]");
   const endpointButtons = root.querySelectorAll("[data-endpoint-target]");
   const cohortBoard = root.querySelector("[data-cohort-board]");
+  const riskFactorBoard = root.querySelector("[data-risk-factor-board]");
+  const thresholdForm = root.querySelector("[data-threshold-form]");
+  const thresholdStatus = root.querySelector("[data-threshold-status]");
+  const thresholdJson = root.querySelector("[data-threshold-json] code");
+  const thresholdFlaggedN = root.querySelector("[data-threshold-flagged-n]");
+  const thresholdFlaggedPct = root.querySelector("[data-threshold-flagged-pct]");
+  const thresholdWeeks = root.querySelector("[data-threshold-weeks]");
+  const thresholdDelta = root.querySelector("[data-threshold-delta]");
 
   const summaryShort = root.querySelector("[data-summary-short-sleep]");
   const summarySedentary = root.querySelector("[data-summary-sedentary]");
@@ -114,10 +146,10 @@ function initStudio() {
 
   async function refreshSummary() {
     const data = await fetchJson("/api/v1/summary");
-    summaryShort.textContent = `${data.behavioral_signals.short_sleep_rate_pct}%`;
-    summarySedentary.textContent = `${data.behavioral_signals.high_sedentary_rate_pct}%`;
-    summaryElevated.textContent = `${data.behavioral_signals.elevated_rate_pct}%`;
-    summaryRows.textContent = `${data.sample.merged_adult_rows}`;
+    summaryShort.textContent = `${data.mental_health_signals.phq_high_risk_rate_pct}%`;
+    summarySedentary.textContent = `${data.mental_health_signals.mean_phq9_score}`;
+    summaryElevated.textContent = `${data.coverage.phq_complete_pct}%`;
+    summaryRows.textContent = `${data.threshold_reference.flagged_weighted_pct}%`;
   }
 
   async function refreshProfile(formData) {
@@ -137,6 +169,27 @@ function initStudio() {
   async function refreshCohorts() {
     const data = await fetchJson("/api/v1/priority-cohorts?limit=6&min_participants=100");
     cohortBoard.innerHTML = data.rows.map(createCohortCard).join("");
+  }
+
+  async function refreshRiskFactors() {
+    if (!riskFactorBoard) return;
+    const data = await fetchJson("/api/v1/risk-factors?limit=6&min_participants=120");
+    riskFactorBoard.innerHTML = data.rows.map(createRiskFactorCard).join("");
+  }
+
+  async function refreshThreshold(formData) {
+    if (!thresholdForm || !thresholdJson) return;
+    const query = new URLSearchParams(formData).toString();
+    const endpoint = `/api/v1/threshold-simulate?${query}`;
+    thresholdStatus.textContent = "模拟中";
+    endpointLabel.textContent = endpoint;
+    const data = await fetchJson(endpoint);
+    thresholdFlaggedN.textContent = `${data.flagged_n}`;
+    thresholdFlaggedPct.textContent = `${data.flagged_weighted_pct}%`;
+    thresholdWeeks.textContent = `${data.estimated_counselor_weeks}`;
+    thresholdDelta.textContent = `${data.delta_vs_threshold_10_pct_point}pt`;
+    thresholdJson.textContent = prettyJson(data);
+    thresholdStatus.textContent = `阈值 ${data.threshold}`;
   }
 
   form.addEventListener("submit", async (event) => {
@@ -172,7 +225,17 @@ function initStudio() {
     }
   });
 
-  Promise.all([refreshSummary(), refreshCohorts()]).catch(() => {});
+  thresholdForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    try {
+      await refreshThreshold(new FormData(thresholdForm));
+    } catch (error) {
+      thresholdStatus.textContent = "模拟失败";
+      thresholdJson.textContent = error.message;
+    }
+  });
+
+  Promise.all([refreshSummary(), refreshCohorts(), refreshRiskFactors()]).catch(() => {});
 }
 
 function initReports() {
@@ -220,17 +283,17 @@ function initExamples() {
       badge: "机构运营场景",
       title: "市级心理健康中心如何识别优先筛查人群",
       summary:
-        "团队需要在有限预算下安排下一轮筛查与外展服务，希望先看清哪些群体同时呈现短睡眠、久坐和低收入信号。",
-      tags: ["重点人群识别", "筛查优先级排序", "管理汇报摘要"],
+        "团队需要在有限预算下安排下一轮筛查与外展服务，希望先看清哪些群体同时呈现 PHQ-9 高风险、睡眠不足和低收入信号。",
+      tags: ["PHQ-9 风险分层", "筛查优先级排序", "管理汇报摘要"],
       steps: [
-        ["读取样本", "先从人口学、睡眠和活动数据里建立分析基础。"],
-        ["识别重点群体", "按年龄、收入和行为信号定位优先筛查对象。"],
-        ["生成机构简报", "把结果整理成管理团队能快速理解的语言。"],
+        ["读取样本", "先从人口学、PHQ-9、睡眠、BMI 和慢病数据里建立分析基础。"],
+        ["识别重点群体", "按年龄、收入和睡眠压力定位优先筛查对象。"],
+        ["生成机构简报", "把 PHQ-9 风险结果整理成管理团队能快速理解的语言。"],
       ],
       outcomeTitle: "一份可直接进入周会讨论的优先级名单",
       outcomes: [
         "优先筛查群体组合列表",
-        "重点信号占比与说明",
+        "PHQ-9 高风险占比与说明",
         "适合管理层阅读的摘要语言",
       ],
       endpoints: ["/api/v1/priority-cohorts", "/api/v1/reports/manager"],
@@ -239,11 +302,11 @@ function initExamples() {
       badge: "学生服务场景",
       title: "高校学生支持中心如何提前发现高压力生活方式人群",
       summary:
-        "学校希望在学期中段提前锁定睡眠不足、活动下降、需要重点触达的学生群体，用于安排宣传、筛查与支持服务。",
+        "学校希望在学期中段提前锁定 PHQ-9 风险更高、睡眠不足、需要重点触达的学生群体，用于安排宣传、筛查与支持服务。",
       tags: ["学生支持", "学期筛查计划", "触达策略优化"],
       steps: [
-        ["分层查看画像", "先看不同年龄段与群体的行为模式差异。"],
-        ["圈定重点对象", "识别高优先级占比更高的学生人群组合。"],
+        ["分层查看画像", "先看不同年龄段与群体的 PHQ-9 风险差异。"],
+        ["圈定重点对象", "识别高风险占比更高的学生人群组合。"],
         ["输出行动建议", "形成适合学生事务部门使用的外展与沟通节奏。"],
       ],
       outcomeTitle: "一套更适合校园支持体系的触达优先级建议",
@@ -258,10 +321,10 @@ function initExamples() {
       badge: "医院管理场景",
       title: "医院运营团队如何更快看见哪些群体需要优先投入服务资源",
       summary:
-        "医院管理部门希望用更短时间理解高负担群体组合，把服务量能、宣教资源和筛查安排投向更需要的对象。",
+        "医院管理部门希望用更短时间理解 PHQ-9 风险更高的群体组合，把服务量能、宣教资源和筛查安排投向更需要的对象。",
       tags: ["资源配置", "运营汇报", "服务优先级"],
       steps: [
-        ["汇总总体信号", "先确认短睡眠、久坐和高优先级占比等全局指标。"],
+        ["汇总总体信号", "先确认 PHQ-9 高风险率和阈值筛出比例等全局指标。"],
         ["锁定重点组合", "查看当前样本里最值得优先关注的人群组合。"],
         ["支持跨部门沟通", "让管理、临床和项目团队共享同一份结论框架。"],
       ],

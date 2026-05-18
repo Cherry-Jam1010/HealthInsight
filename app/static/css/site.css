@@ -750,6 +750,10 @@ pre {
   gap: 14px;
 }
 
+.inline-control-form {
+  margin: 18px 0 20px;
+}
+
 .control-form label {
   display: grid;
   gap: 8px;
@@ -1061,6 +1065,10 @@ pre {
 
 .vision-cards {
   margin-top: 22px;
+}
+
+.threshold-metrics {
+  margin-bottom: 18px;
 }
 
 .future-card {

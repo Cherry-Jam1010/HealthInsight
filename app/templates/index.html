@@ -6,37 +6,37 @@
 <section class="hero hero-home section-shell">
   <div class="hero-copy">
     <p class="eyebrow">Institutional Health Insight Platform</p>
-    <h1>为机构提供更早识别重点人群的健康洞察服务。</h1>
+    <h1>把 NHANES 心理健康数据，转成机构真正能用的 PHQ-9 风险洞察。</h1>
     <p class="hero-lead">
       HealthInsight 面向公共卫生团队、心理健康机构、医院管理者与研究团队，
-      提供人群画像、重点群体识别、行为风险洞察和多角色决策简报，
-      帮助机构更快完成筛查支持、项目规划和资源配置。
+      提供 PHQ-9 高风险识别、人群风险画像、阈值模拟、重点组合发现和多角色决策简报，
+      帮助机构更快完成筛查支持、项目规划、资源估算与行动优先级排序。
     </p>
     <div class="hero-actions">
       <a class="button button-primary" href="/studio">查看平台演示</a>
       <a class="button button-secondary" href="/examples">查看落地实例</a>
     </div>
     <div class="hero-badges">
-      <span>机构级人群画像</span>
-      <span>重点群体识别</span>
+      <span>PHQ-9 高风险识别</span>
+      <span>阈值模拟</span>
       <span>多角色决策简报</span>
     </div>
   </div>
   <div class="hero-visual">
     <article class="glass-card stat-card float-a">
-      <span>合并样本</span>
-      <strong>{{ summary.sample.merged_adult_rows }}</strong>
-      <small>人口学 + 活动 + 睡眠</small>
+      <span>PHQ 完整样本</span>
+      <strong>{{ summary.sample.phq_complete_rows }}</strong>
+      <small>2021-2023 成人有效筛查样本</small>
     </article>
     <article class="glass-card stat-card float-b">
-      <span>短睡眠率</span>
-      <strong>{{ summary.behavioral_signals.short_sleep_rate_pct }}%</strong>
-      <small>加权总体估计</small>
+      <span>PHQ-9 高风险率</span>
+      <strong>{{ summary.mental_health_signals.phq_high_risk_rate_pct }}%</strong>
+      <small>加权总体筛查阳性风险</small>
     </article>
     <article class="glass-card stat-card wide-card">
       <span>服务定位</span>
-      <strong>机构级筛查支持</strong>
-      <small>服务于项目管理、筛查支持与资源配置</small>
+      <strong>心理健康风险洞察工作台</strong>
+      <small>服务于筛查设计、资源估算与风险沟通</small>
     </article>
     <div class="signal-lines">
       <span></span>
@@ -49,18 +49,18 @@
 <section class="section-shell section-grid">
   <article class="panel panel-accent reveal-on-scroll">
     <p class="section-tag">平台价值</p>
-    <h2>把分散的数据分析结果，转化为机构可以直接使用的行动信息。</h2>
+    <h2>把 PHQ-9、睡眠、BMI 与慢病数据，转化为机构可以直接行动的筛查支持信息。</h2>
     <p>
-      平台通过统一的数据处理与洞察输出流程，帮助机构快速了解样本结构、
-      锁定重点关注群体，并将结果同步给研究、管理和执行团队。
+      平台通过统一的数据清洗、风险标签构建和分层分析流程，帮助机构快速了解高风险分布、
+      锁定重点群体，并把结论同步给研究、管理和执行团队。
     </p>
   </article>
   <article class="panel reveal-on-scroll">
     <p class="section-tag">适用对象</p>
     <ul class="clean-list">
-      <li>公共卫生研究团队：识别人群差异与重点群体。</li>
-      <li>心理健康机构：支持筛查规划与服务优先级制定。</li>
-      <li>医院与管理部门：辅助资源配置与项目汇报。</li>
+      <li>公共卫生研究团队：识别 PHQ-9 风险差异与社会经济分层。</li>
+      <li>心理健康机构：支持筛查规划、阈值设置与转介节奏设计。</li>
+      <li>医院与管理部门：辅助资源估算、项目汇报与重点对象识别。</li>
     </ul>
   </article>
 </section>
@@ -68,24 +68,24 @@
 <section class="section-shell">
   <div class="section-heading">
     <p class="section-tag">核心能力</p>
-    <h2>围绕机构用户的四类高频需求设计</h2>
+    <h2>围绕心理健康筛查与风险沟通的四类高频需求设计</h2>
   </div>
   <div class="feature-grid">
     <article class="feature-card reveal-on-scroll">
       <h3>数据体检</h3>
-      <p>快速了解样本规模、字段覆盖率与数据完整性，帮助团队建立可靠分析基础。</p>
+      <p>快速了解 PHQ-9 有效率、睡眠与 BMI 覆盖率、样本分布和变量完整性。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
-      <h3>人群画像</h3>
-      <p>按年龄、性别、收入与族裔分层展示关键特征，帮助用户快速理解群体差异。</p>
+      <h3>风险画像</h3>
+      <p>按年龄、收入、教育、睡眠、BMI 与慢病负担分层展示 PHQ-9 高风险差异。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
-      <h3>重点群体识别</h3>
-      <p>基于睡眠、活动与社会经济特征识别值得优先关注的人群组合。</p>
+      <h3>高风险组合</h3>
+      <p>识别哪些年龄、收入和睡眠组合更值得优先纳入筛查与外展计划。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
-      <h3>决策简报</h3>
-      <p>同一份分析结果自动适配研究者、管理者、临床团队与技术团队的阅读方式。</p>
+      <h3>阈值与简报</h3>
+      <p>同一份结果既能做阈值模拟，也能自动适配研究、管理、临床与技术团队。</p>
     </article>
   </div>
 </section>
@@ -94,12 +94,12 @@
   <div class="section-heading spread">
     <div>
       <p class="section-tag">实时洞察</p>
-      <h2>按不同分组方式查看平台识别到的重点人群分布</h2>
+      <h2>按不同分组方式查看 PHQ-9 高风险在不同人群中的分布</h2>
     </div>
     <div class="chip-row">
       <button class="chip-button is-active" data-home-group="age_band">按年龄</button>
       <button class="chip-button" data-home-group="income_band">按收入</button>
-      <button class="chip-button" data-home-group="gender">按性别</button>
+      <button class="chip-button" data-home-group="sleep_band">按睡眠</button>
     </div>
   </div>
   <div class="live-grid" data-home-profile data-current-group="age_band">
@@ -108,10 +108,10 @@
       <div class="bar-item">
         <div class="bar-label">
           <span>{{ row.group }}</span>
-          <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+          <strong>{{ row.high_risk_rate_pct }}%</strong>
         </div>
         <div class="bar-track">
-          <div class="bar-fill" style="width: {{ row.elevated_priority_rate_pct or 0 }}%"></div>
+          <div class="bar-fill" style="width: {{ row.high_risk_rate_pct or 0 }}%"></div>
         </div>
       </div>
       {% endfor %}
@@ -126,19 +126,19 @@
 <section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
     <p class="section-tag">重点关注对象</p>
-    <h2>当前最值得优先纳入筛查与服务规划的人群组合</h2>
+    <h2>当前最值得优先纳入 PHQ-9 筛查与外展计划的人群组合</h2>
     <div class="cohort-stack">
       {% for row in cohorts.rows[:4] %}
       <article class="cohort-card">
-        <div class="cohort-title">{{ row.age_band }} / {{ row.gender }} / {{ row.income_band }}</div>
+        <div class="cohort-title">{{ row.segment_label }}</div>
         <div class="cohort-meta">{{ row.participants }} 人样本</div>
         <div class="metric-inline">
-          <span>短睡眠</span>
-          <strong>{{ row.short_sleep_rate_pct }}%</strong>
+          <span>PHQ-9 高风险</span>
+          <strong>{{ row.high_risk_rate_pct }}%</strong>
         </div>
         <div class="metric-inline">
-          <span>高优先级</span>
-          <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+          <span>平均 PHQ-9</span>
+          <strong>{{ row.mean_phq9_score }}</strong>
         </div>
       </article>
       {% endfor %}
@@ -156,13 +156,45 @@
   </article>
 </section>
 
+<section class="section-shell section-grid-two">
+  <article class="panel reveal-on-scroll">
+    <p class="section-tag">风险线索</p>
+    <h2>平台已经识别出的高风险因素线索</h2>
+    <div class="cohort-stack">
+      {% for row in risk_factors.rows %}
+      <article class="cohort-card">
+        <div class="cohort-title">{{ row.dimension }} / {{ row.group }}</div>
+        <div class="cohort-meta">{{ row.participants }} 人有效样本</div>
+        <div class="metric-inline">
+          <span>高风险率</span>
+          <strong>{{ row.high_risk_rate_pct }}%</strong>
+        </div>
+        <div class="metric-inline">
+          <span>高于总体</span>
+          <strong>{{ row.uplift_vs_overall_pct_point }}pt</strong>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel panel-accent reveal-on-scroll">
+    <p class="section-tag">为什么现在更有用</p>
+    <h2>这次接入后，平台已经从行为信号展示升级成真实 PHQ-9 风险洞察。</h2>
+    <ul class="clean-list">
+      <li>不再只是看睡眠和活动，而是基于真实 PHQ-9 问卷构建高风险标签。</li>
+      <li>可以同时把收入、教育、BMI、慢病和睡眠放到同一张风险图谱里理解。</li>
+      <li>可以继续往阈值模拟、公平性检查和预测建模方向平滑扩展。</li>
+    </ul>
+  </article>
+</section>
+
 <section class="section-shell cta-ribbon reveal-on-scroll">
   <div>
     <p class="section-tag">立即体验</p>
-    <h2>从人群画像到机构简报，一站式查看平台能力</h2>
-    <p>进入平台演示页，按不同分组方式查看人群分布、重点群体和实时洞察结果。</p>
+    <h2>从 PHQ-9 风险画像到阈值模拟，一站式查看平台能力</h2>
+    <p>进入平台演示页，按不同分组方式查看高风险分布、风险因素和实时模拟结果。</p>
   </div>
-    <div class="cta-actions">
+  <div class="cta-actions">
     <a class="button button-primary" href="/examples">查看落地实例</a>
     <a class="button button-secondary" href="/vision">浏览全球视野</a>
   </div>

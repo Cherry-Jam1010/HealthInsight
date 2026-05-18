@@ -12,3 +12,4 @@ tmp_*.txt
 .DS_Store
 Thumbs.db
 Cloudflared.exe
+NHANES/*.xpt

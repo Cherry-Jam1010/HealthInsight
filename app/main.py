@@ -16,12 +16,12 @@ from app.analytics import NHANESAnalyticsService
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
-DATA_DIR = PROJECT_DIR / "data"
 
 TAGS_METADATA = [
     {"name": "Site", "description": "产品网站与前端展示页面。"},
     {"name": "Platform", "description": "平台健康状态、能力声明与数据目录。"},
     {"name": "Analytics", "description": "人群画像、摘要指标与优先级群体分析。"},
+    {"name": "Simulation", "description": "阈值模拟、风险模式与风险因素线索。"},
     {"name": "Reports", "description": "面向不同角色的报告与摘要输出。"},
 ]
 
@@ -55,7 +55,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 @lru_cache
 def get_service() -> NHANESAnalyticsService:
-    return NHANESAnalyticsService(DATA_DIR)
+    return NHANESAnalyticsService(PROJECT_DIR)
 
 
 def error_response(
@@ -102,6 +102,7 @@ async def homepage(request: Request) -> HTMLResponse:
     summary = service.summary()
     cohorts = service.priority_cohorts(limit=6, min_participants=100)
     manager_report = service.audience_report("manager")
+    risk_factors = service.risk_factors(limit=4, min_participants=120)
     profile = service.population_profile("age_band", min_participants=100)
     return templates.TemplateResponse(
         request=request,
@@ -111,6 +112,7 @@ async def homepage(request: Request) -> HTMLResponse:
             summary=summary,
             cohorts=cohorts,
             manager_report=manager_report,
+            risk_factors=risk_factors,
             profile=profile,
             profile_json=json.dumps(profile, ensure_ascii=False, indent=2),
             summary_json=json.dumps(summary, ensure_ascii=False, indent=2),
@@ -137,6 +139,8 @@ async def studio_page(request: Request) -> HTMLResponse:
     service = get_service()
     summary = service.summary()
     cohorts = service.priority_cohorts(limit=6, min_participants=100)
+    risk_factors = service.risk_factors(limit=6, min_participants=120)
+    threshold = service.threshold_simulation(threshold=10, weekly_capacity=20)
     return templates.TemplateResponse(
         request=request,
         name="studio.html",
@@ -144,7 +148,10 @@ async def studio_page(request: Request) -> HTMLResponse:
             "studio",
             summary=summary,
             cohorts=cohorts,
+            risk_factors=risk_factors,
+            threshold=threshold,
             summary_json=json.dumps(summary, ensure_ascii=False, indent=2),
+            threshold_json=json.dumps(threshold, ensure_ascii=False, indent=2),
         ),
     )
 
@@ -221,7 +228,10 @@ async def summary() -> dict[str, Any]:
 async def population_profile(
     group_by: str = Query(
         "age_band",
-        description="可选值：age_band、gender、race_ethnicity、income_band、priority_tier。",
+        description=(
+            "可选值：age_band、gender、race_ethnicity、income_band、education_band、"
+            "sleep_band、bmi_band、chronic_band、priority_tier、phq_severity_band。"
+        ),
     ),
     min_age: int = Query(18, ge=18, le=80),
     max_age: int = Query(80, ge=18, le=80),
@@ -243,6 +253,33 @@ async def priority_cohorts(
     min_participants: int = Query(80, ge=20, le=500),
 ) -> dict[str, Any]:
     return get_service().priority_cohorts(limit=limit, min_participants=min_participants)
+
+
+@app.get("/api/v1/risk-patterns", tags=["Simulation"])
+async def risk_patterns(
+    limit: int = Query(6, ge=1, le=20),
+    min_participants: int = Query(60, ge=20, le=500),
+) -> dict[str, Any]:
+    return get_service().risk_patterns(limit=limit, min_participants=min_participants)
+
+
+@app.get("/api/v1/risk-factors", tags=["Simulation"])
+async def risk_factors(
+    limit: int = Query(8, ge=1, le=20),
+    min_participants: int = Query(120, ge=20, le=1000),
+) -> dict[str, Any]:
+    return get_service().risk_factors(limit=limit, min_participants=min_participants)
+
+
+@app.get("/api/v1/threshold-simulate", tags=["Simulation"])
+async def threshold_simulate(
+    threshold: int = Query(10, ge=0, le=27),
+    weekly_capacity: int = Query(20, ge=1, le=10000),
+) -> dict[str, Any]:
+    return get_service().threshold_simulation(
+        threshold=threshold,
+        weekly_capacity=weekly_capacity,
+    )
 
 
 @app.get("/api/v1/reports/{audience}", tags=["Reports"])

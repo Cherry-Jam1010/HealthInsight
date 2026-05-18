@@ -5,10 +5,10 @@
 {% block content %}
 <section class="page-hero section-shell">
   <p class="eyebrow">Platform Demo</p>
-  <h1>实时查看平台如何呈现人群画像与重点群体识别结果。</h1>
+  <h1>实时查看平台如何呈现 PHQ-9 风险画像、风险因素与阈值模拟结果。</h1>
   <p class="hero-lead">
-    这里提供的是机构用户可理解的动态演示界面。你可以按不同分组方式查看画像结果、
-    重点群体和实时返回内容，快速感受平台的洞察能力。
+    这里提供的是机构用户可理解的动态演示界面。你可以按不同分组方式查看 PHQ-9 高风险分布、
+    重点组合、风险因素和筛查阈值模拟，快速感受平台的洞察能力。
   </p>
 </section>
 
@@ -23,7 +23,11 @@
           <option value="income_band">收入层</option>
           <option value="gender">性别</option>
           <option value="race_ethnicity">族裔</option>
-          <option value="priority_tier">优先级层级</option>
+          <option value="education_band">教育层</option>
+          <option value="sleep_band">睡眠层</option>
+          <option value="bmi_band">BMI 分层</option>
+          <option value="chronic_band">慢病负担</option>
+          <option value="priority_tier">支持优先级</option>
         </select>
       </label>
       <label>
@@ -45,11 +49,17 @@
       <button class="endpoint-pick is-active" type="button" data-endpoint-target="/api/v1/summary">
         平台总览
       </button>
-      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/population-profile?group_by=age_band">
-        人群画像
+      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/population-profile?group_by=income_band">
+        风险画像
       </button>
       <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/priority-cohorts">
-        重点群体
+        高风险组合
+      </button>
+      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/risk-factors">
+        风险因素
+      </button>
+      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/threshold-simulate?threshold=10&weekly_capacity=20">
+        阈值模拟
       </button>
     </div>
   </aside>
@@ -57,20 +67,20 @@
   <div class="studio-main">
     <section class="metric-board reveal-on-scroll">
       <article class="metric-tile">
-        <span>短睡眠率</span>
-        <strong data-summary-short-sleep>{{ summary.behavioral_signals.short_sleep_rate_pct }}%</strong>
+        <span>PHQ-9 高风险</span>
+        <strong data-summary-short-sleep>{{ summary.mental_health_signals.phq_high_risk_rate_pct }}%</strong>
       </article>
       <article class="metric-tile">
-        <span>高久坐率</span>
-        <strong data-summary-sedentary>{{ summary.behavioral_signals.high_sedentary_rate_pct }}%</strong>
+        <span>平均 PHQ-9</span>
+        <strong data-summary-sedentary>{{ summary.mental_health_signals.mean_phq9_score }}</strong>
       </article>
       <article class="metric-tile">
-        <span>重点关注占比</span>
-        <strong data-summary-elevated>{{ summary.behavioral_signals.elevated_rate_pct }}%</strong>
+        <span>PHQ 完整率</span>
+        <strong data-summary-elevated>{{ summary.coverage.phq_complete_pct }}%</strong>
       </article>
       <article class="metric-tile">
-        <span>合并样本量</span>
-        <strong data-summary-rows>{{ summary.sample.merged_adult_rows }}</strong>
+        <span>阈值10筛出率</span>
+        <strong data-summary-rows>{{ summary.threshold_reference.flagged_weighted_pct }}%</strong>
       </article>
     </section>
 
@@ -79,7 +89,7 @@
         <div class="section-heading spread compact">
           <div>
             <p class="section-tag">画像结果</p>
-            <h2>当前分组人群对比</h2>
+            <h2>当前分组下的 PHQ-9 高风险对比</h2>
           </div>
           <span class="status-dot" data-profile-status>已载入</span>
         </div>
@@ -101,27 +111,92 @@
     <section class="panel reveal-on-scroll">
       <div class="section-heading spread compact">
         <div>
-          <p class="section-tag">重点群体</p>
-          <h2>当前最值得优先关注的人群组合</h2>
+          <p class="section-tag">高风险组合</p>
+          <h2>当前最值得优先纳入筛查与外展的人群组合</h2>
         </div>
         <button class="ghost-chip" type="button" data-refresh-cohorts>刷新结果</button>
       </div>
       <div class="cohort-board" data-cohort-board>
         {% for row in cohorts.rows %}
         <article class="cohort-card">
-          <div class="cohort-title">{{ row.age_band }} / {{ row.gender }} / {{ row.income_band }}</div>
+          <div class="cohort-title">{{ row.segment_label }}</div>
           <div class="cohort-meta">{{ row.participants }} 人样本</div>
           <div class="metric-inline">
-            <span>短睡眠</span>
-            <strong>{{ row.short_sleep_rate_pct }}%</strong>
+            <span>PHQ-9 高风险</span>
+            <strong>{{ row.high_risk_rate_pct }}%</strong>
           </div>
           <div class="metric-inline">
-            <span>高优先级</span>
-            <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+            <span>平均 PHQ-9</span>
+            <strong>{{ row.mean_phq9_score }}</strong>
           </div>
         </article>
         {% endfor %}
       </div>
+    </section>
+
+    <section class="section-grid-two">
+      <article class="panel reveal-on-scroll">
+        <div class="section-heading compact">
+          <p class="section-tag">风险因素线索</p>
+          <h2>哪些因素分层最值得优先关注</h2>
+        </div>
+        <div class="cohort-stack" data-risk-factor-board>
+          {% for row in risk_factors.rows %}
+          <article class="cohort-card">
+            <div class="cohort-title">{{ row.dimension }} / {{ row.group }}</div>
+            <div class="cohort-meta">{{ row.participants }} 人有效样本</div>
+            <div class="metric-inline">
+              <span>高风险率</span>
+              <strong>{{ row.high_risk_rate_pct }}%</strong>
+            </div>
+            <div class="metric-inline">
+              <span>高于总体</span>
+              <strong>{{ row.uplift_vs_overall_pct_point }}pt</strong>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </article>
+
+      <article class="panel panel-accent reveal-on-scroll">
+        <div class="section-heading spread compact">
+          <div>
+            <p class="section-tag">阈值模拟</p>
+            <h2>用不同 PHQ-9 阈值估算筛出量和承接压力</h2>
+          </div>
+          <span class="status-dot" data-threshold-status>基线阈值 10</span>
+        </div>
+        <form class="control-form inline-control-form" data-threshold-form>
+          <label>
+            PHQ-9 阈值
+            <input type="number" name="threshold" value="{{ threshold.threshold }}" min="0" max="27" />
+          </label>
+          <label>
+            每周可承接人数
+            <input type="number" name="weekly_capacity" value="{{ threshold.weekly_capacity }}" min="1" max="10000" />
+          </label>
+          <button type="submit" class="button button-primary wide">模拟阈值</button>
+        </form>
+        <div class="metric-board compact-metrics threshold-metrics">
+          <article class="metric-tile">
+            <span>筛出人数</span>
+            <strong data-threshold-flagged-n>{{ threshold.flagged_n }}</strong>
+          </article>
+          <article class="metric-tile">
+            <span>筛出占比</span>
+            <strong data-threshold-flagged-pct>{{ threshold.flagged_weighted_pct }}%</strong>
+          </article>
+          <article class="metric-tile">
+            <span>咨询师周数</span>
+            <strong data-threshold-weeks>{{ threshold.estimated_counselor_weeks }}</strong>
+          </article>
+          <article class="metric-tile">
+            <span>相对阈值10变化</span>
+            <strong data-threshold-delta>{{ threshold.delta_vs_threshold_10_pct_point }}pt</strong>
+          </article>
+        </div>
+        <pre class="dark-pre subtle" data-threshold-json><code>{{ threshold_json }}</code></pre>
+      </article>
     </section>
   </div>
 </section>

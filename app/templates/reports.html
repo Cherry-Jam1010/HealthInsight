@@ -5,10 +5,10 @@
 {% block content %}
 <section class="page-hero section-shell">
   <p class="eyebrow">Decision Briefing</p>
-  <h1>同一份分析结果，可面向不同机构角色输出不同的阅读版本。</h1>
+  <h1>同一份 PHQ-9 风险分析结果，可面向不同机构角色输出不同的阅读版本。</h1>
   <p class="hero-lead">
-    不同团队关注的信息重点并不相同。平台可按研究、管理、临床与技术视角组织同一份结果，
-    让分析结论更容易被机构内部理解和使用。
+    不同团队关注的信息重点并不相同。平台可按研究、管理、临床与技术视角组织同一份心理健康风险结果，
+    让分析结论更容易被机构内部理解、复用和推动行动。
   </p>
 </section>
 
@@ -49,15 +49,15 @@
     <div class="cohort-board" data-report-cohorts>
       {% for row in initial_report.top_cohorts %}
       <article class="cohort-card">
-        <div class="cohort-title">{{ row.age_band }} / {{ row.gender }} / {{ row.income_band }}</div>
+        <div class="cohort-title">{{ row.segment_label }}</div>
         <div class="cohort-meta">{{ row.participants }} 人样本</div>
         <div class="metric-inline">
-          <span>短睡眠</span>
-          <strong>{{ row.short_sleep_rate_pct }}%</strong>
+          <span>PHQ-9 高风险</span>
+          <strong>{{ row.high_risk_rate_pct }}%</strong>
         </div>
         <div class="metric-inline">
-          <span>高优先级</span>
-          <strong>{{ row.elevated_priority_rate_pct }}%</strong>
+          <span>平均 PHQ-9</span>
+          <strong>{{ row.mean_phq9_score }}</strong>
         </div>
       </article>
       {% endfor %}
