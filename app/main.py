@@ -103,27 +103,10 @@ async def handle_http_error(_: Request, exc: HTTPException) -> JSONResponse:
 
 @app.get("/", response_class=HTMLResponse, tags=["Site"])
 async def homepage(request: Request) -> HTMLResponse:
-    service = get_service()
-    summary = service.summary()
-    cohorts = service.priority_cohorts(limit=6, min_participants=100)
-    manager_report = service.audience_report("manager")
-    risk_factors = service.risk_factors(limit=4, min_participants=120)
-    profile = service.population_profile("age_band", min_participants=100)
-    comparison = service.cycle_comparison("age_band", min_participants=100)
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context=page_context(
-            "home",
-            summary=summary,
-            cohorts=cohorts,
-            manager_report=manager_report,
-            risk_factors=risk_factors,
-            profile=profile,
-            comparison=comparison,
-            profile_json=json.dumps(profile, ensure_ascii=False, indent=2),
-            comparison_json=json.dumps(comparison, ensure_ascii=False, indent=2),
-        ),
+        context=page_context("home"),
     )
 
 

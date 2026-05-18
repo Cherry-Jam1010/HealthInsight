@@ -7,8 +7,8 @@
   <p class="eyebrow">HealthInsight</p>
   <h1>机构级心理健康风险洞察平台</h1>
   <p class="hero-lead">
-    平台结合当前心理健康风险数据与历史行为基线数据，帮助机构完成重点人群识别、
-    风险沟通、阈值模拟和管理汇报。
+    HealthInsight 面向公共卫生、心理健康机构、医院与研究团队，
+    提供心理健康风险画像、双周期对照、阈值模拟和角色化简报。
   </p>
   <div class="hero-actions">
     <a class="button button-primary" href="/guide">查看使用指南</a>
@@ -16,129 +16,62 @@
   </div>
 </section>
 
-<section class="section-shell">
-  <div class="metric-board">
-    <article class="metric-tile reveal-on-scroll">
-      <span>PHQ-9 高风险率</span>
-      <strong>{{ summary.mental_health_signals.phq_high_risk_rate_pct }}%</strong>
-    </article>
-    <article class="metric-tile reveal-on-scroll">
-      <span>平均 PHQ-9</span>
-      <strong>{{ summary.mental_health_signals.mean_phq9_score }}</strong>
-    </article>
-    <article class="metric-tile reveal-on-scroll">
-      <span>当前短睡眠率</span>
-      <strong>{{ summary.shared_signals.current_short_sleep_rate_pct }}%</strong>
-    </article>
-    <article class="metric-tile reveal-on-scroll">
-      <span>历史短睡眠率</span>
-      <strong>{{ summary.shared_signals.legacy_short_sleep_rate_pct }}%</strong>
-    </article>
-  </div>
-</section>
-
 <section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">平台能做什么</p>
-    <h2>四类核心能力</h2>
+    <p class="section-tag">平台能力</p>
+    <h2>围绕机构级心理健康筛查支持设计</h2>
     <ul class="clean-list">
       <li>识别不同人群的 PHQ-9 风险分布。</li>
-      <li>发现最值得优先筛查和外展的人群组合。</li>
-      <li>模拟不同阈值下的筛出量与承接压力。</li>
-      <li>用历史睡眠和活动基线解释当前风险背景。</li>
+      <li>发现值得优先筛查和外展的人群组合。</li>
+      <li>用历史睡眠与活动基线解释当前风险背景。</li>
+      <li>估算不同阈值下的筛出量与承接压力。</li>
     </ul>
   </article>
 
   <article class="panel panel-accent reveal-on-scroll">
-    <p class="section-tag">适合谁用</p>
-    <h2>面向机构团队的统一入口</h2>
-    <ul class="clean-list">
-      <li>公共卫生团队</li>
-      <li>心理健康机构</li>
-      <li>医院与管理部门</li>
-      <li>研究与技术团队</li>
-    </ul>
-  </article>
-</section>
-
-<section class="section-shell section-grid-two">
-  <article class="panel reveal-on-scroll">
-    <p class="section-tag">重点人群</p>
-    <h2>当前最值得优先关注的人群组合</h2>
-    <div class="cohort-stack">
-      {% for row in cohorts.rows[:4] %}
-      <article class="cohort-card">
-        <div class="cohort-title">{{ row.segment_label }}</div>
-        <div class="cohort-meta">{{ row.participants }} 人样本</div>
-        <div class="metric-inline">
-          <span>PHQ-9 高风险</span>
-          <strong>{{ row.high_risk_rate_pct }}%</strong>
-        </div>
-        <div class="metric-inline">
-          <span>平均 PHQ-9</span>
-          <strong>{{ row.mean_phq9_score }}</strong>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-  </article>
-
-  <article class="panel reveal-on-scroll">
-    <p class="section-tag">双周期对照</p>
-    <h2>当前风险与历史睡眠背景</h2>
-    <div class="cohort-stack">
-      {% for row in comparison.rows[:4] %}
-      <article class="cohort-card">
-        <div class="cohort-title">{{ row.group }}</div>
-        <div class="cohort-meta">
-          当前 {{ row.current_participants or "-" }} 人 / 历史 {{ row.baseline_participants or "-" }} 人
-        </div>
-        <div class="metric-inline">
-          <span>当前 PHQ-9 高风险</span>
-          <strong>{{ row.current_high_risk_rate_pct or "-" }}%</strong>
-        </div>
-        <div class="metric-inline">
-          <span>历史短睡眠率</span>
-          <strong>{{ row.baseline_short_sleep_rate_pct or "-" }}%</strong>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-  </article>
-</section>
-
-<section class="section-shell section-grid-two">
-  <article class="panel reveal-on-scroll">
-    <p class="section-tag">使用建议</p>
+    <p class="section-tag">推荐入口</p>
     <h2>第一次使用建议顺序</h2>
     <ol class="clean-list">
-      <li>先看使用指南 `/guide`。</li>
-      <li>再看在线演示 `/studio`。</li>
-      <li>然后打开报告中心 `/reports`。</li>
-      <li>最后根据需要接入 `/docs` 中的 API。</li>
+      <li>先看 `/guide` 了解使用顺序。</li>
+      <li>再看 `/studio` 体验在线演示。</li>
+      <li>然后查看 `/reports` 切换不同角色视角。</li>
+      <li>最后通过 `/docs` 接入 API。</li>
     </ol>
   </article>
+</section>
 
-  <article class="panel panel-dark reveal-on-scroll">
-    <p class="section-tag">管理摘要</p>
-    <h2>{{ manager_report.headline }}</h2>
-    <ul class="clean-list light">
-      {% for point in manager_report.focus_points %}
-      <li>{{ point }}</li>
-      {% endfor %}
-    </ul>
+<section class="section-shell feature-grid">
+  <article class="feature-card reveal-on-scroll">
+    <h3>使用指南</h3>
+    <p>给产品用户和开发者的分步骤上手说明。</p>
+    <a class="ghost-link" href="/guide">打开指南</a>
+  </article>
+  <article class="feature-card reveal-on-scroll">
+    <h3>在线演示</h3>
+    <p>查看重点人群、风险画像和双周期对照。</p>
+    <a class="ghost-link" href="/studio">打开演示</a>
+  </article>
+  <article class="feature-card reveal-on-scroll">
+    <h3>报告中心</h3>
+    <p>按研究、管理、临床和技术视角切换简报。</p>
+    <a class="ghost-link" href="/reports">打开报告</a>
+  </article>
+  <article class="feature-card reveal-on-scroll">
+    <h3>接口文档</h3>
+    <p>查看 OpenAPI 文档和接口参数。</p>
+    <a class="ghost-link" href="/docs">打开文档</a>
   </article>
 </section>
 
 <section class="section-shell cta-ribbon reveal-on-scroll">
   <div>
-    <p class="section-tag">继续浏览</p>
-    <h2>先看指南，再看演示，最后再接接口。</h2>
-    <p>如果首页可以正常运行，后续页面和 API 才更适合继续验证。</p>
+    <p class="section-tag">下一步</p>
+    <h2>首页先保证稳定启动，动态分析在后续页面完成。</h2>
+    <p>如果 Hugging Face 可以稳定打开首页，后续再继续验证演示页和接口页。</p>
   </div>
   <div class="cta-actions">
-    <a class="button button-primary" href="/guide">打开指南</a>
-    <a class="button button-secondary" href="/docs">打开接口文档</a>
+    <a class="button button-primary" href="/guide">先看指南</a>
+    <a class="button button-secondary" href="/studio">再看演示</a>
   </div>
 </section>
 {% endblock %}
