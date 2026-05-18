@@ -10,13 +10,14 @@ pinned: false
 
 # HealthInsight
 
-HealthInsight is an institutional health insight platform for public health teams, mental health organizations, hospital managers, and research groups.
+HealthInsight is a dual-source mental health insight platform for public health teams, mental health organizations, hospital managers, and research groups.
 
 It provides:
 
-- population profiling
+- PHQ-9 risk profiling
 - priority cohort identification
-- behavioral burden summaries
+- current-risk and historical-baseline comparison
+- threshold simulation for screening capacity
 - role-based briefing outputs
 
 This Space runs a FastAPI application with server-rendered pages and API endpoints.
