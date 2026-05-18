@@ -5,55 +5,90 @@
 {% block content %}
 <section class="page-hero section-shell">
   <p class="eyebrow">Getting Started</p>
-  <h1>3 分钟看懂这个 API 怎么用。</h1>
+  <h1>先做什么，再做什么，这一页讲清楚。</h1>
   <p class="hero-lead">
-    这页专门给第一次接触产品的人准备。无论你是想先看页面效果，还是想直接调接口，
-    都可以从这里开始。
+    如果你是第一次使用 HealthInsight，不用自己猜顺序。下面已经按“产品用户”和“开发者”两条路径整理好了。
   </p>
 </section>
 
 <section class="section-shell section-grid-two">
   <article class="panel panel-accent reveal-on-scroll">
-    <p class="section-tag">给产品用户</p>
-    <h2>如果你不写代码，建议这样用。</h2>
-    <div class="timeline guide-timeline">
-      <article>
-        <span>Step 1</span>
-        <h3>先看首页</h3>
-        <p>快速理解平台能帮你识别什么风险、支持什么决策。</p>
-      </article>
-      <article>
-        <span>Step 2</span>
-        <h3>打开在线演示</h3>
-        <p>按年龄、收入、睡眠等维度切换查看重点人群。</p>
-      </article>
-      <article>
-        <span>Step 3</span>
-        <h3>看报告中心</h3>
-        <p>切换研究、管理、临床视角，直接拿去做汇报。</p>
-      </article>
-    </div>
+    <p class="section-tag">第一步</p>
+    <h2>先判断你是哪种用户。</h2>
+    <ul class="clean-list">
+      <li>如果你要给老师、客户或团队演示产品：走“产品用户路径”。</li>
+      <li>如果你要接系统、调接口或做前端联调：走“开发者路径”。</li>
+    </ul>
   </article>
 
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">给开发者</p>
-    <h2>如果你要接入接口，建议这样开始。</h2>
+    <p class="section-tag">关键文档</p>
+    <h2>先把这几个文档收好。</h2>
+    <div class="hero-actions">
+      <a class="button button-primary" href="/downloads/quickstart">下载快速开始</a>
+      <a class="button button-secondary" href="/downloads/api-strategy">下载架构说明</a>
+      <a class="button button-secondary" href="/downloads/readme">下载 README</a>
+      <a class="button button-secondary" href="/downloads/openapi">下载 OpenAPI JSON</a>
+    </div>
+  </article>
+</section>
+
+<section class="section-shell section-grid-two">
+  <article class="panel reveal-on-scroll">
+    <p class="section-tag">产品用户路径</p>
+    <h2>不写代码，就按这 3 步走。</h2>
     <div class="timeline guide-timeline">
       <article>
-        <span>Step 1</span>
-        <h3>读 `/docs`</h3>
-        <p>先在交互文档里确认每个接口的参数和返回结构。</p>
+        <span>第一步</span>
+        <h3>打开首页</h3>
+        <p>先理解平台能识别什么风险、能支持什么决策。</p>
       </article>
       <article>
-        <span>Step 2</span>
-        <h3>调 `summary`</h3>
-        <p>先拿总体摘要，确认服务状态和核心字段。</p>
+        <span>第二步</span>
+        <h3>打开在线演示</h3>
+        <p>看重点人群、风险画像、双周期对照和阈值模拟。</p>
       </article>
       <article>
-        <span>Step 3</span>
-        <h3>按场景接入</h3>
-        <p>再接画像、双周期对照、阈值模拟和简报接口。</p>
+        <span>第三步</span>
+        <h3>打开报告中心</h3>
+        <p>把同一份结果切换成研究、管理或临床能看懂的版本。</p>
       </article>
+    </div>
+    <div class="hero-actions">
+      <a class="button button-primary" href="/">打开首页</a>
+      <a class="button button-secondary" href="/studio">打开在线演示</a>
+      <a class="button button-secondary" href="/reports">打开报告中心</a>
+    </div>
+  </article>
+
+  <article class="panel panel-dark reveal-on-scroll">
+    <p class="section-tag">开发者路径</p>
+    <h2>要接 API，就按这 4 步走。</h2>
+    <div class="timeline guide-timeline">
+      <article>
+        <span>第一步</span>
+        <h3>打开 `/docs`</h3>
+        <p>先确认所有接口、参数和返回结构。</p>
+      </article>
+      <article>
+        <span>第二步</span>
+        <h3>先调 `summary`</h3>
+        <p>先拿总体摘要，确认当前风险和历史基线字段。</p>
+      </article>
+      <article>
+        <span>第三步</span>
+        <h3>再调分组接口</h3>
+        <p>重点接 `population-profile` 和 `cycle-comparison`。</p>
+      </article>
+      <article>
+        <span>第四步</span>
+        <h3>最后接模拟和简报</h3>
+        <p>再接 `threshold-simulate` 和 `reports/{audience}`。</p>
+      </article>
+    </div>
+    <div class="hero-actions">
+      <a class="button button-light" href="/docs">打开接口文档</a>
+      <a class="button button-light" href="/downloads/openapi">下载 OpenAPI JSON</a>
     </div>
   </article>
 </section>
@@ -61,46 +96,46 @@
 <section class="section-shell">
   <div class="section-heading">
     <p class="section-tag">推荐顺序</p>
-    <h2>第一次使用，建议按这 5 个接口顺着看。</h2>
+    <h2>第一次接 API，按这个顺序最不容易迷路。</h2>
   </div>
   <div class="feature-grid guide-feature-grid">
     <article class="feature-card reveal-on-scroll">
       <h3>1. `health`</h3>
-      <p>确认服务是否在线。</p>
+      <p>确认服务在线。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
       <h3>2. `summary`</h3>
-      <p>查看当前风险、历史基线和核心摘要。</p>
+      <p>先读总体风险和历史基线。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
       <h3>3. `population-profile`</h3>
-      <p>查看不同人群的 PHQ-9 风险分布。</p>
+      <p>看不同人群的风险分布。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
       <h3>4. `cycle-comparison`</h3>
-      <p>把当前风险和历史睡眠基线放在一起看。</p>
+      <p>看当前风险和历史睡眠背景。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
       <h3>5. `threshold-simulate`</h3>
-      <p>估算筛查阈值变化后会筛出多少人。</p>
+      <p>看阈值变化后的筛出量。</p>
     </article>
   </div>
 </section>
 
 <section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">最常用接口</p>
-    <h2>先从这两个接口开始最稳。</h2>
-    <div class="hero-badges">
-      <span>/api/v1/summary</span>
-      <span>/api/v1/cycle-comparison?group_by=age_band</span>
-    </div>
+    <p class="section-tag">最先要调的接口</p>
+    <h2>先调这两个。</h2>
+    <ul class="clean-list">
+      <li>第一步：`/api/v1/summary`</li>
+      <li>第二步：`/api/v1/cycle-comparison?group_by=age_band`</li>
+    </ul>
     <pre class="dark-pre subtle"><code>{{ summary_json }}</code></pre>
   </article>
 
   <article class="panel panel-dark reveal-on-scroll">
     <p class="section-tag">双周期示例</p>
-    <h2>同一类人群，当前风险和历史背景怎么一起返回。</h2>
+    <h2>第二个关键返回长这样。</h2>
     <pre class="dark-pre subtle"><code>{{ comparison_json }}</code></pre>
   </article>
 </section>
@@ -108,8 +143,10 @@
 <section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
     <p class="section-tag">复制即用</p>
-    <h2>curl 示例</h2>
-    <pre class="dark-pre subtle"><code>curl http://127.0.0.1:8000/api/v1/summary
+    <h2>命令行示例</h2>
+    <pre class="dark-pre subtle"><code>curl http://127.0.0.1:8000/api/v1/health
+
+curl http://127.0.0.1:8000/api/v1/summary
 
 curl "http://127.0.0.1:8000/api/v1/population-profile?group_by=income_band&amp;min_participants=80"
 
@@ -119,8 +156,8 @@ curl "http://127.0.0.1:8000/api/v1/threshold-simulate?threshold=10&amp;weekly_ca
   </article>
 
   <article class="panel panel-accent reveal-on-scroll">
-    <p class="section-tag">前端接入</p>
-    <h2>浏览器 `fetch` 示例</h2>
+    <p class="section-tag">浏览器接入</p>
+    <h2>`fetch` 示例</h2>
     <pre class="dark-pre subtle"><code>const summary = await fetch("/api/v1/summary").then((r) =&gt; r.json());
 
 const profile = await fetch(
@@ -135,22 +172,22 @@ const comparison = await fetch(
 
 <section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">你会得到什么</p>
+    <p class="section-tag">你会拿到什么</p>
     <ul class="clean-list">
-      <li>`summary`：总体风险、历史基线、样本覆盖和阈值参考。</li>
-      <li>`population-profile`：不同分组下的 PHQ-9 高风险占比。</li>
+      <li>`summary`：总体风险、历史基线、覆盖率和阈值参考。</li>
+      <li>`population-profile`：不同分组的 PHQ-9 高风险比例。</li>
       <li>`cycle-comparison`：同一维度下的当前风险与历史短睡眠背景。</li>
-      <li>`reports/{audience}`：按角色生成更容易汇报的文字摘要。</li>
+      <li>`reports/{audience}`：给不同角色的现成摘要语言。</li>
     </ul>
   </article>
 
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">使用建议</p>
+    <p class="section-tag">最后提醒</p>
     <ul class="clean-list">
-      <li>先看 `summary`，再看分组接口，不容易迷路。</li>
-      <li>要给客户展示时，优先用首页、演示页和报告中心。</li>
-      <li>要做系统接入时，优先用 `/docs` 和这页的复制示例。</li>
-      <li>如果使用 `trycloudflare`，每次重启分享都要用新链接。</li>
+      <li>如果你是产品演示，先走：首页 → 演示页 → 报告中心。</li>
+      <li>如果你是系统接入，先走：`/docs` → `summary` → 分组接口。</li>
+      <li>如果你用 `trycloudflare`，每次重启分享都必须换成新链接。</li>
+      <li>关键文档已经放在本页顶部，可以直接下载。</li>
     </ul>
   </article>
 </section>
@@ -158,11 +195,11 @@ const comparison = await fetch(
 <section class="section-shell cta-ribbon reveal-on-scroll">
   <div>
     <p class="section-tag">下一步</p>
-    <h2>先看在线演示，再决定是走页面展示还是直接接 API。</h2>
-    <p>如果你已经理解接口结构，可以直接打开文档；如果你要给别人展示产品，先去演示页最直观。</p>
+    <h2>现在你可以直接开始：看页面，或者接接口。</h2>
+    <p>如果你要演示产品，就先去在线演示；如果你要开发接入，就先去接口文档。</p>
   </div>
   <div class="cta-actions">
-    <a class="button button-primary" href="/studio">打开演示</a>
+    <a class="button button-primary" href="/studio">打开在线演示</a>
     <a class="button button-secondary" href="/docs">打开接口文档</a>
   </div>
 </section>

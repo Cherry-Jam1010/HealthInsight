@@ -7,7 +7,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -16,6 +16,7 @@ from app.analytics import NHANESAnalyticsService
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
+DOCS_DIR = PROJECT_DIR / "docs"
 
 TAGS_METADATA = [
     {"name": "Site", "description": "产品网站与前端展示页面。"},
@@ -199,6 +200,38 @@ async def guide_page(request: Request) -> HTMLResponse:
             comparison_json=json.dumps(comparison, ensure_ascii=False, indent=2),
         ),
     )
+
+
+@app.get("/downloads/quickstart", tags=["Site"])
+async def download_quickstart() -> FileResponse:
+    return FileResponse(
+        DOCS_DIR / "HealthInsight_API_Quickstart_CN.md",
+        filename="HealthInsight_API_Quickstart_CN.md",
+        media_type="text/markdown",
+    )
+
+
+@app.get("/downloads/api-strategy", tags=["Site"])
+async def download_api_strategy() -> FileResponse:
+    return FileResponse(
+        PROJECT_DIR / "API_STRATEGY.md",
+        filename="HealthInsight_API_Strategy_CN.md",
+        media_type="text/markdown",
+    )
+
+
+@app.get("/downloads/readme", tags=["Site"])
+async def download_readme() -> FileResponse:
+    return FileResponse(
+        PROJECT_DIR / "README.md",
+        filename="HealthInsight_README_CN.md",
+        media_type="text/markdown",
+    )
+
+
+@app.get("/downloads/openapi", tags=["Site"])
+async def download_openapi() -> RedirectResponse:
+    return RedirectResponse(url="/api/v1/openapi.json", status_code=307)
 
 
 @app.get("/reports", response_class=HTMLResponse, tags=["Site"])
