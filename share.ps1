@@ -1,7 +1,8 @@
 param(
   [int]$Port = 8010,
   [string]$BindHost = "127.0.0.1",
-  [string]$CloudflaredPath = ""
+  [string]$CloudflaredPath = "",
+  [int]$TunnelRetries = 3
 )
 
 $python = Join-Path $PSScriptRoot ".healthee\Scripts\python.exe"
@@ -76,7 +77,35 @@ try {
   Write-Host "If you close this window or restart sharing, the previous public link will stop working."
   Write-Host "Starting Cloudflare Tunnel. Press Ctrl+C to stop sharing."
 
-  & $CloudflaredPath tunnel --url "http://$BindHost`:$Port"
+  $tunnelUrl = "http://$BindHost`:$Port"
+  for ($attempt = 1; $attempt -le $TunnelRetries; $attempt++) {
+    if ($attempt -gt 1) {
+      Write-Host "Retrying Quick Tunnel ($attempt/$TunnelRetries)..."
+    }
+
+    $startedAt = Get-Date
+    & $CloudflaredPath tunnel --url $tunnelUrl
+    $exitCode = $LASTEXITCODE
+    $elapsed = ((Get-Date) - $startedAt).TotalSeconds
+
+    if ($exitCode -eq 0) {
+      break
+    }
+
+    if ($elapsed -ge 20) {
+      Write-Host "Cloudflare Tunnel session ended."
+      break
+    }
+
+    if ($attempt -lt $TunnelRetries) {
+      Write-Warning "Quick Tunnel start failed quickly with exit code $exitCode. This is usually a temporary Cloudflare-side error. Waiting 3 seconds before retrying."
+      Start-Sleep -Seconds 3
+      continue
+    }
+
+    Write-Error "Quick Tunnel failed after $TunnelRetries attempts. Please rerun '.\share.ps1' in a moment."
+    exit 1
+  }
 }
 finally {
   if ($serverProcess -and -not $serverProcess.HasExited) {
