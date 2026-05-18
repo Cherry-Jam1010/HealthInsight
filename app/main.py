@@ -19,29 +19,29 @@ PROJECT_DIR = BASE_DIR.parent
 
 TAGS_METADATA = [
     {"name": "Site", "description": "产品网站与前端展示页面。"},
-    {"name": "Platform", "description": "平台健康状态、能力声明与数据目录。"},
-    {"name": "Analytics", "description": "人群画像、摘要指标与优先级群体分析。"},
-    {"name": "Simulation", "description": "阈值模拟、风险模式与风险因素线索。"},
-    {"name": "Reports", "description": "面向不同角色的报告与摘要输出。"},
+    {"name": "Platform", "description": "平台状态、能力说明与数据目录。"},
+    {"name": "Analytics", "description": "风险画像、摘要指标与重点人群分析。"},
+    {"name": "Simulation", "description": "阈值模拟、双周期对照与风险线索。"},
+    {"name": "Reports", "description": "面向不同角色的简报输出。"},
 ]
 
 NAV_ITEMS = [
     {"key": "home", "label": "首页", "href": "/"},
     {"key": "scenarios", "label": "应用场景", "href": "/scenarios"},
     {"key": "examples", "label": "落地实例", "href": "/examples"},
-    {"key": "studio", "label": "API 展示台", "href": "/studio"},
+    {"key": "studio", "label": "在线演示", "href": "/studio"},
     {"key": "reports", "label": "报告中心", "href": "/reports"},
     {"key": "vision", "label": "全球视野", "href": "/vision"},
 ]
 
 app = FastAPI(
     title="HealthInsight API",
-    summary="面向公共卫生与心理健康机构的健康洞察 API。",
+    summary="面向公共卫生与心理健康机构的双数据源风险洞察 API。",
     description=(
-        "基于 NHANES 人口学、睡眠与体力活动模块构建的机构级健康洞察 API，"
-        "支持数据体检、人群画像、优先级群体识别与角色化摘要输出。"
+        "平台同时使用当前 NHANES 心理健康数据与历史行为基线数据，"
+        "支持 PHQ-9 风险画像、重点人群识别、阈值模拟与机构级简报输出。"
     ),
-    version="1.0.0",
+    version="2.1.0",
     contact={"name": "HealthInsight Project"},
     openapi_tags=TAGS_METADATA,
     openapi_url="/api/v1/openapi.json",
@@ -59,7 +59,10 @@ def get_service() -> NHANESAnalyticsService:
 
 
 def error_response(
-    code: str, message: str, details: dict[str, Any] | None = None, status_code: int = 400
+    code: str,
+    message: str,
+    details: dict[str, Any] | None = None,
+    status_code: int = 400,
 ) -> JSONResponse:
     return JSONResponse(
         status_code=status_code,
@@ -104,6 +107,7 @@ async def homepage(request: Request) -> HTMLResponse:
     manager_report = service.audience_report("manager")
     risk_factors = service.risk_factors(limit=4, min_participants=120)
     profile = service.population_profile("age_band", min_participants=100)
+    comparison = service.cycle_comparison("age_band", min_participants=100)
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -114,8 +118,9 @@ async def homepage(request: Request) -> HTMLResponse:
             manager_report=manager_report,
             risk_factors=risk_factors,
             profile=profile,
+            comparison=comparison,
             profile_json=json.dumps(profile, ensure_ascii=False, indent=2),
-            summary_json=json.dumps(summary, ensure_ascii=False, indent=2),
+            comparison_json=json.dumps(comparison, ensure_ascii=False, indent=2),
         ),
     )
 
@@ -141,6 +146,7 @@ async def studio_page(request: Request) -> HTMLResponse:
     cohorts = service.priority_cohorts(limit=6, min_participants=100)
     risk_factors = service.risk_factors(limit=6, min_participants=120)
     threshold = service.threshold_simulation(threshold=10, weekly_capacity=20)
+    comparison = service.cycle_comparison("age_band", min_participants=100)
     return templates.TemplateResponse(
         request=request,
         name="studio.html",
@@ -150,8 +156,10 @@ async def studio_page(request: Request) -> HTMLResponse:
             cohorts=cohorts,
             risk_factors=risk_factors,
             threshold=threshold,
+            comparison=comparison,
             summary_json=json.dumps(summary, ensure_ascii=False, indent=2),
             threshold_json=json.dumps(threshold, ensure_ascii=False, indent=2),
+            comparison_json=json.dumps(comparison, ensure_ascii=False, indent=2),
         ),
     )
 
@@ -206,7 +214,7 @@ async def vision_page(request: Request) -> HTMLResponse:
 
 @app.get("/api/v1/health", tags=["Platform"])
 async def health() -> dict[str, Any]:
-    return {"status": "ok", "service": "HealthInsight API", "version": "1.0.0"}
+    return {"status": "ok", "service": "HealthInsight API", "version": "2.1.0"}
 
 
 @app.get("/api/v1/capabilities", tags=["Platform"])
@@ -230,7 +238,7 @@ async def population_profile(
         "age_band",
         description=(
             "可选值：age_band、gender、race_ethnicity、income_band、education_band、"
-            "sleep_band、bmi_band、chronic_band、priority_tier、phq_severity_band。"
+            "sleep_band、bmi_band、chronic_band、priority_tier、phq_severity_band"
         ),
     ),
     min_age: int = Query(18, ge=18, le=80),
@@ -269,6 +277,28 @@ async def risk_factors(
     min_participants: int = Query(120, ge=20, le=1000),
 ) -> dict[str, Any]:
     return get_service().risk_factors(limit=limit, min_participants=min_participants)
+
+
+@app.get("/api/v1/cycle-comparison", tags=["Simulation"])
+async def cycle_comparison(
+    group_by: str = Query(
+        "age_band",
+        description=(
+            "可选值：age_band、gender、race_ethnicity、income_band、education_band、sleep_band"
+        ),
+    ),
+    min_age: int = Query(18, ge=18, le=80),
+    max_age: int = Query(80, ge=18, le=80),
+    min_participants: int = Query(80, ge=20, le=500),
+) -> dict[str, Any]:
+    if min_age > max_age:
+        raise ValueError("min_age 不能大于 max_age")
+    return get_service().cycle_comparison(
+        group_by=group_by,
+        min_age=min_age,
+        max_age=max_age,
+        min_participants=min_participants,
+    )
 
 
 @app.get("/api/v1/threshold-simulate", tags=["Simulation"])

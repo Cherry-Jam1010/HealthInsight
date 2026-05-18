@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}HealthInsight | 平台演示{% endblock %}
+{% block title %}HealthInsight | 在线演示{% endblock %}
 
 {% block content %}
 <section class="page-hero section-shell">
   <p class="eyebrow">Platform Demo</p>
-  <h1>实时查看平台如何呈现 PHQ-9 风险画像、风险因素与阈值模拟结果。</h1>
+  <h1>实时查看平台如何识别人群风险、对照历史基线并估算筛查压力。</h1>
   <p class="hero-lead">
-    这里提供的是机构用户可理解的动态演示界面。你可以按不同分组方式查看 PHQ-9 高风险分布、
-    重点组合、风险因素和筛查阈值模拟，快速感受平台的洞察能力。
+    这里展示的是产品用户能直接理解的动态页面。你可以切换分组、查看高风险组合、
+    读取双周期对照，并模拟不同 PHQ-9 阈值下的筛出量。
   </p>
 </section>
 
@@ -53,10 +53,13 @@
         风险画像
       </button>
       <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/priority-cohorts">
-        高风险组合
+        重点组合
       </button>
       <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/risk-factors">
         风险因素
+      </button>
+      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/cycle-comparison?group_by=age_band">
+        双周期对照
       </button>
       <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/threshold-simulate?threshold=10&weekly_capacity=20">
         阈值模拟
@@ -75,8 +78,8 @@
         <strong data-summary-sedentary>{{ summary.mental_health_signals.mean_phq9_score }}</strong>
       </article>
       <article class="metric-tile">
-        <span>PHQ 完整率</span>
-        <strong data-summary-elevated>{{ summary.coverage.phq_complete_pct }}%</strong>
+        <span>历史短睡眠率</span>
+        <strong data-summary-elevated>{{ summary.shared_signals.legacy_short_sleep_rate_pct }}%</strong>
       </article>
       <article class="metric-tile">
         <span>阈值10筛出率</span>
@@ -111,8 +114,8 @@
     <section class="panel reveal-on-scroll">
       <div class="section-heading spread compact">
         <div>
-          <p class="section-tag">高风险组合</p>
-          <h2>当前最值得优先纳入筛查与外展的人群组合</h2>
+          <p class="section-tag">重点组合</p>
+          <h2>当前最值得优先纳入筛查与外展的人群</h2>
         </div>
         <button class="ghost-chip" type="button" data-refresh-cohorts>刷新结果</button>
       </div>
@@ -136,9 +139,41 @@
 
     <section class="section-grid-two">
       <article class="panel reveal-on-scroll">
+        <div class="section-heading spread compact">
+          <div>
+            <p class="section-tag">双周期对照</p>
+            <h2>同一类人群，当前风险和历史睡眠背景一起看</h2>
+          </div>
+          <div class="chip-row">
+            <button class="chip-button is-active" type="button" data-cycle-group="age_band">按年龄</button>
+            <button class="chip-button" type="button" data-cycle-group="income_band">按收入</button>
+            <button class="chip-button" type="button" data-cycle-group="sleep_band">按睡眠</button>
+          </div>
+        </div>
+        <div class="cohort-stack" data-cycle-comparison-board>
+          {% for row in comparison.rows[:4] %}
+          <article class="cohort-card">
+            <div class="cohort-title">{{ row.group }}</div>
+            <div class="cohort-meta">
+              当前 {{ row.current_participants or "-" }} 人 / 历史 {{ row.baseline_participants or "-" }} 人
+            </div>
+            <div class="metric-inline">
+              <span>当前 PHQ-9 高风险</span>
+              <strong>{{ row.current_high_risk_rate_pct or "-" }}%</strong>
+            </div>
+            <div class="metric-inline">
+              <span>历史短睡眠率</span>
+              <strong>{{ row.baseline_short_sleep_rate_pct or "-" }}%</strong>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </article>
+
+      <article class="panel reveal-on-scroll">
         <div class="section-heading compact">
-          <p class="section-tag">风险因素线索</p>
-          <h2>哪些因素分层最值得优先关注</h2>
+          <p class="section-tag">风险因素</p>
+          <h2>哪些分层最值得优先关注</h2>
         </div>
         <div class="cohort-stack" data-risk-factor-board>
           {% for row in risk_factors.rows %}
@@ -157,12 +192,14 @@
           {% endfor %}
         </div>
       </article>
+    </section>
 
+    <section class="section-grid-two">
       <article class="panel panel-accent reveal-on-scroll">
         <div class="section-heading spread compact">
           <div>
             <p class="section-tag">阈值模拟</p>
-            <h2>用不同 PHQ-9 阈值估算筛出量和承接压力</h2>
+            <h2>不同阈值下会筛出多少人</h2>
           </div>
           <span class="status-dot" data-threshold-status>基线阈值 10</span>
         </div>
@@ -196,6 +233,14 @@
           </article>
         </div>
         <pre class="dark-pre subtle" data-threshold-json><code>{{ threshold_json }}</code></pre>
+      </article>
+
+      <article class="panel panel-dark reveal-on-scroll">
+        <div class="section-heading compact">
+          <p class="section-tag">双周期接口返回</p>
+          <h2>当前对照结果</h2>
+        </div>
+        <pre class="dark-pre subtle" data-cycle-json><code>{{ comparison_json }}</code></pre>
       </article>
     </section>
   </div>

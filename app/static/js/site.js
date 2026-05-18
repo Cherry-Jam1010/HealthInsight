@@ -90,6 +90,29 @@ function createRiskFactorCard(row) {
   `;
 }
 
+function createComparisonCard(row) {
+  const currentParticipants = row.current_participants ?? "-";
+  const baselineParticipants = row.baseline_participants ?? "-";
+  const currentRisk = row.current_high_risk_rate_pct ?? "-";
+  const baselineSleep = row.baseline_short_sleep_rate_pct ?? "-";
+  const currentRiskLabel = currentRisk === "-" ? "-" : `${currentRisk}%`;
+  const baselineSleepLabel = baselineSleep === "-" ? "-" : `${baselineSleep}%`;
+  return `
+    <article class="cohort-card">
+      <div class="cohort-title">${row.group}</div>
+      <div class="cohort-meta">当前 ${currentParticipants} 人 / 历史 ${baselineParticipants} 人</div>
+      <div class="metric-inline">
+        <span>当前 PHQ-9 高风险</span>
+        <strong>${currentRiskLabel}</strong>
+      </div>
+      <div class="metric-inline">
+        <span>历史短睡眠率</span>
+        <strong>${baselineSleepLabel}</strong>
+      </div>
+    </article>
+  `;
+}
+
 function initHomeProfileSwitcher() {
   const root = document.querySelector("[data-home-profile]");
   if (!root) return;
@@ -138,6 +161,9 @@ function initStudio() {
   const thresholdFlaggedPct = root.querySelector("[data-threshold-flagged-pct]");
   const thresholdWeeks = root.querySelector("[data-threshold-weeks]");
   const thresholdDelta = root.querySelector("[data-threshold-delta]");
+  const comparisonBoard = root.querySelector("[data-cycle-comparison-board]");
+  const comparisonJson = root.querySelector("[data-cycle-json] code");
+  const comparisonButtons = root.querySelectorAll("[data-cycle-group]");
 
   const summaryShort = root.querySelector("[data-summary-short-sleep]");
   const summarySedentary = root.querySelector("[data-summary-sedentary]");
@@ -148,7 +174,7 @@ function initStudio() {
     const data = await fetchJson("/api/v1/summary");
     summaryShort.textContent = `${data.mental_health_signals.phq_high_risk_rate_pct}%`;
     summarySedentary.textContent = `${data.mental_health_signals.mean_phq9_score}`;
-    summaryElevated.textContent = `${data.coverage.phq_complete_pct}%`;
+    summaryElevated.textContent = `${data.shared_signals.legacy_short_sleep_rate_pct}%`;
     summaryRows.textContent = `${data.threshold_reference.flagged_weighted_pct}%`;
   }
 
@@ -175,6 +201,17 @@ function initStudio() {
     if (!riskFactorBoard) return;
     const data = await fetchJson("/api/v1/risk-factors?limit=6&min_participants=120");
     riskFactorBoard.innerHTML = data.rows.map(createRiskFactorCard).join("");
+  }
+
+  async function refreshComparison(group = "age_band") {
+    if (!comparisonBoard || !comparisonJson) return;
+    const endpoint = `/api/v1/cycle-comparison?group_by=${group}&min_participants=80`;
+    const data = await fetchJson(endpoint);
+    comparisonBoard.innerHTML = data.rows.slice(0, 6).map(createComparisonCard).join("");
+    comparisonJson.textContent = prettyJson(data);
+    comparisonButtons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.cycleGroup === group);
+    });
   }
 
   async function refreshThreshold(formData) {
@@ -235,7 +272,22 @@ function initStudio() {
     }
   });
 
-  Promise.all([refreshSummary(), refreshCohorts(), refreshRiskFactors()]).catch(() => {});
+  comparisonButtons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      try {
+        await refreshComparison(button.dataset.cycleGroup);
+      } catch (error) {
+        comparisonJson.textContent = error.message;
+      }
+    });
+  });
+
+  Promise.all([
+    refreshSummary(),
+    refreshCohorts(),
+    refreshRiskFactors(),
+    refreshComparison(),
+  ]).catch(() => {});
 }
 
 function initReports() {

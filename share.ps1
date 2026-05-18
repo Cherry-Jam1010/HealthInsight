@@ -38,6 +38,7 @@ if ([string]::IsNullOrWhiteSpace($CloudflaredPath) -or -not (Test-Path $Cloudfla
 
 $uvicornCommand = "& '$python' -m uvicorn app.main:app --host $BindHost --port $Port"
 $serverProcess = $null
+$healthUrl = "http://$BindHost`:$Port/api/v1/health"
 
 try {
   $serverProcess = Start-Process `
@@ -47,14 +48,32 @@ try {
     -WindowStyle Hidden `
     -PassThru
 
-  Start-Sleep -Seconds 3
+  $ready = $false
+  for ($attempt = 1; $attempt -le 20; $attempt++) {
+    Start-Sleep -Seconds 1
 
-  if ($serverProcess.HasExited) {
-    Write-Error "Local web service failed to start."
+    if ($serverProcess.HasExited) {
+      Write-Error "Local web service failed to start."
+      exit 1
+    }
+
+    try {
+      Invoke-WebRequest -UseBasicParsing -Uri $healthUrl -TimeoutSec 2 | Out-Null
+      $ready = $true
+      break
+    }
+    catch {
+    }
+  }
+
+  if (-not $ready) {
+    Write-Error "Local web service did not become ready in time."
     exit 1
   }
 
   Write-Host "Local service running at http://$BindHost`:$Port"
+  Write-Host "Quick Tunnel is temporary. Use the newest trycloudflare.com link only."
+  Write-Host "If you close this window or restart sharing, the previous public link will stop working."
   Write-Host "Starting Cloudflare Tunnel. Press Ctrl+C to stop sharing."
 
   & $CloudflaredPath tunnel --url "http://$BindHost`:$Port"

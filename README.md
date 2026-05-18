@@ -11,7 +11,12 @@
 
 ## 当前数据能做什么
 
-当前版本优先使用 `NHANES/` 目录中的 **NHANES August 2021-August 2023** 公开成人数据模块：
+当前版本同时使用两套数据：
+
+- `NHANES/`：当前周期心理健康主分析数据
+- `data/`：历史行为基线数据
+
+其中 `NHANES/` 目录中的 **NHANES August 2021-August 2023** 公开成人数据模块包括：
 
 - `DEMO_L.xpt`：人口学与样本权重
 - `DPQ_L.xpt`：PHQ-9 抑郁筛查问卷
@@ -19,9 +24,16 @@
 - `BMX_L.xpt`：BMI 与身体测量
 - `MCQ_L.xpt`：慢病与医疗状况
 
-基于这五份数据，当前版本支持：
+`data/` 目录中的历史基线文件包括：
+
+- `P_DEMO.xpt`：历史人口学基线
+- `P_SLQ.xpt`：历史睡眠基线
+- `P_PAQ.xpt`：历史活动基线
+
+基于这两套数据，当前版本支持：
 
 - PHQ-9 总分与高风险标签构建
+- 当前风险与历史基线对照
 - 数据体检与变量覆盖率展示
 - 年龄 / 性别 / 收入 / 族裔 / 教育 / 睡眠 / BMI / 慢病负担分层画像
 - 高风险组合识别
@@ -100,6 +112,7 @@
 - `GET /api/v1/priority-cohorts`
 - `GET /api/v1/risk-patterns`
 - `GET /api/v1/risk-factors`
+- `GET /api/v1/cycle-comparison?group_by=age_band`
 - `GET /api/v1/threshold-simulate?threshold=10&weekly_capacity=20`
 - `GET /api/v1/reports/{audience}`
 
@@ -116,7 +129,7 @@
 
 ```text
 app/
-  analytics.py           # NHANES 读取、清洗、合并、特征衍生与统计
+  analytics.py           # 双数据源读取、清洗、合并、特征衍生与统计
   main.py                # FastAPI 应用与网站路由
   templates/
     base.html            # 中文站点底座模板
@@ -129,7 +142,7 @@ app/
     js/site.js           # 前端交互逻辑
 API_STRATEGY.md          # API 架构说明
 FRAME.md                 # 原始产品定位文档
-data/                    # 旧版行为数据
+data/                    # 历史行为基线数据
 NHANES/                  # 2021-2023 心理健康风险分析数据
 ```
 
@@ -222,6 +235,7 @@ https://xxxx-xxxx.trycloudflare.com
 - 你的电脑要保持开机。
 - `share.ps1` 运行的终端不要关闭。
 - 按 `Ctrl + C` 会停止隧道，并自动结束本地服务。
+- 每次重新运行 `share.ps1`，都会生成新的公网链接；旧链接会失效。
 - `Quick Tunnel` 更适合演示和临时分享，不适合长期正式上线。
 
 ## 部署到 Hugging Face Spaces
