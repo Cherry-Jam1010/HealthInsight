@@ -1,9 +1,16 @@
 const prettyJson = (data) => JSON.stringify(data, null, 2);
 
-async function fetchJson(url) {
-  const response = await fetch(url);
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, options);
   if (!response.ok) {
-    throw new Error(`请求失败: ${response.status}`);
+    let message = `请求失败: ${response.status}`;
+    try {
+      const payload = await response.json();
+      message = payload?.error?.message || message;
+    } catch (error) {
+      // Ignore error payload parsing failures and keep a simple fallback.
+    }
+    throw new Error(message);
   }
   return response.json();
 }
@@ -33,17 +40,155 @@ function initMobileNav() {
   });
 }
 
+const DATASET_META = {
+  current: {
+    label: "北美 / NHANES",
+    branchStatus: "北美当前分支",
+    scale: "PHQ-9",
+    riskLabel: "PHQ-9 高风险",
+    scoreLabel: "平均 PHQ-9",
+    referenceLabel: "历史短睡眠率",
+    comparisonTitle: "同一类人群，当前风险和历史睡眠背景一起看",
+    profileTitle: "当前分组下的 PHQ-9 高风险对比",
+    cohortTitle: "当前最值得优先纳入筛查与外展的人群",
+    thresholdLabel: "PHQ-9 阈值",
+    thresholdMax: 27,
+    thresholdDefault: 10,
+    comparisonMode: "sleep",
+    profileGroups: [
+      { value: "age_band", label: "年龄层" },
+      { value: "income_band", label: "收入层" },
+      { value: "gender", label: "性别" },
+      { value: "race_ethnicity", label: "族裔" },
+      { value: "education_band", label: "教育层" },
+      { value: "sleep_band", label: "睡眠层" },
+      { value: "bmi_band", label: "BMI 分层" },
+      { value: "chronic_band", label: "慢病负担" },
+      { value: "priority_tier", label: "支持优先级" },
+    ],
+  },
+  charls: {
+    label: "中国 / CHARLS",
+    branchStatus: "中国 CHARLS 分支",
+    scale: "CES-D10",
+    riskLabel: "CES-D10 高风险",
+    scoreLabel: "平均 CES-D10",
+    referenceLabel: "北美参考短睡眠率",
+    comparisonTitle: "中国分支与北美参考的同维度对照",
+    profileTitle: "当前分组下的 CES-D10 高风险对比",
+    cohortTitle: "当前最值得优先纳入中国样本筛查与外展的人群",
+    thresholdLabel: "CES-D10 阈值",
+    thresholdMax: 30,
+    thresholdDefault: 10,
+    comparisonMode: "risk",
+    profileGroups: [
+      { value: "age_band", label: "年龄层" },
+      { value: "income_band", label: "支出层" },
+      { value: "gender", label: "性别" },
+      { value: "education_band", label: "教育层" },
+      { value: "sleep_band", label: "睡眠层" },
+      { value: "chronic_band", label: "慢病负担" },
+      { value: "priority_tier", label: "支持优先级" },
+      { value: "residence_band", label: "城乡层" },
+      { value: "hukou_band", label: "户口层" },
+      { value: "mental_health_severity_band", label: "心理健康分层" },
+    ],
+  },
+  custom: {
+    label: "自定义 / Sandbox",
+    branchStatus: "自定义临时分支",
+    scale: "自定义量表",
+    riskLabel: "量表高风险",
+    scoreLabel: "平均量表得分",
+    referenceLabel: "北美参考短睡眠率",
+    comparisonTitle: "自定义分支与北美参考的同维度对照",
+    profileTitle: "当前分组下的自定义高风险对比",
+    cohortTitle: "当前自定义样本里优先筛查与外展的人群",
+    thresholdLabel: "量表阈值",
+    thresholdMax: 30,
+    thresholdDefault: 10,
+    comparisonMode: "risk",
+    profileGroups: [
+      { value: "age_band", label: "年龄层" },
+      { value: "income_band", label: "收入层" },
+      { value: "gender", label: "性别" },
+      { value: "education_band", label: "教育层" },
+      { value: "sleep_band", label: "睡眠层" },
+      { value: "bmi_band", label: "BMI 分层" },
+      { value: "chronic_band", label: "慢病负担" },
+      { value: "priority_tier", label: "支持优先级" },
+      { value: "residence_band", label: "居住地" },
+    ],
+  },
+};
+
+function getDatasetMeta(dataset) {
+  if (typeof dataset === "string" && dataset.startsWith("custom:")) {
+    return DATASET_META.custom;
+  }
+  return DATASET_META[dataset] || DATASET_META.current;
+}
+
+function buildApiUrl(path, params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== "") {
+      query.set(key, value);
+    }
+  });
+  const queryString = query.toString();
+  return queryString ? `${path}?${queryString}` : path;
+}
+
+function formatValue(value, suffix = "") {
+  if (value === null || value === undefined || value === "") {
+    return "-";
+  }
+  return `${value}${suffix}`;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function setButtonState(buttons, expectedValue, getValue) {
+  buttons.forEach((button) => {
+    button.classList.toggle("is-active", getValue(button) === expectedValue);
+  });
+}
+
+function setSelectOptions(select, options, currentValue) {
+  if (!select) return;
+  select.innerHTML = options
+    .map((option) => `<option value="${option.value}">${option.label}</option>`)
+    .join("");
+  const supportedValue = options.some((option) => option.value === currentValue)
+    ? currentValue
+    : options[0]?.value;
+  if (supportedValue) {
+    select.value = supportedValue;
+  }
+}
+
 function createBarRow(row) {
-  const group = row.group || row.segment_label || `${row.age_band} / ${row.income_band} / ${row.sleep_band}`;
+  const group =
+    row.group ||
+    row.segment_label ||
+    `${row.age_band} / ${row.income_band} / ${row.sleep_band}`;
   const rate = row.high_risk_rate_pct ?? row.elevated_priority_rate_pct ?? 0;
   return `
     <div class="bar-item">
       <div class="bar-label">
         <span>${group}</span>
-        <strong>${rate}%</strong>
+        <strong>${formatValue(rate, "%")}</strong>
       </div>
       <div class="bar-track">
-        <div class="bar-fill" style="width:${Math.max(0, Math.min(100, rate))}%"></div>
+        <div class="bar-fill" style="width:${Math.max(0, Math.min(100, rate || 0))}%"></div>
       </div>
     </div>
   `;
@@ -53,21 +198,24 @@ function createCohortTitle(row) {
   return row.segment_label || `${row.age_band} / ${row.income_band} / ${row.sleep_band || row.gender}`;
 }
 
-function createCohortCard(row) {
+function createCohortCard(row, dataset = "current") {
+  const meta = getDatasetMeta(dataset);
   const primaryMetric = row.high_risk_rate_pct ?? row.elevated_priority_rate_pct;
-  const secondaryMetric = row.mean_phq9_score ?? row.short_sleep_rate_pct;
-  const secondaryLabel = row.mean_phq9_score != null ? "平均 PHQ-9" : "短睡眠";
+  const hasMentalScore = row.mean_mental_health_score != null || row.mean_phq9_score != null;
+  const secondaryMetric =
+    row.mean_mental_health_score ?? row.mean_phq9_score ?? row.short_sleep_rate_pct;
+  const secondaryLabel = hasMentalScore ? meta.scoreLabel : "短睡眠";
   return `
     <article class="cohort-card">
       <div class="cohort-title">${createCohortTitle(row)}</div>
-      <div class="cohort-meta">${row.participants} 人样本</div>
+      <div class="cohort-meta">${formatValue(row.participants)} 人样本</div>
       <div class="metric-inline">
-        <span>PHQ-9 高风险</span>
-        <strong>${primaryMetric}%</strong>
+        <span>${meta.riskLabel}</span>
+        <strong>${formatValue(primaryMetric, "%")}</strong>
       </div>
       <div class="metric-inline">
         <span>${secondaryLabel}</span>
-        <strong>${secondaryMetric}${row.mean_phq9_score != null ? "" : "%"}</strong>
+        <strong>${formatValue(secondaryMetric, hasMentalScore ? "" : "%")}</strong>
       </div>
     </article>
   `;
@@ -77,37 +225,41 @@ function createRiskFactorCard(row) {
   return `
     <article class="cohort-card">
       <div class="cohort-title">${row.dimension} / ${row.group}</div>
-      <div class="cohort-meta">${row.participants} 人有效样本</div>
+      <div class="cohort-meta">${formatValue(row.participants)} 人有效样本</div>
       <div class="metric-inline">
         <span>高风险率</span>
-        <strong>${row.high_risk_rate_pct}%</strong>
+        <strong>${formatValue(row.high_risk_rate_pct, "%")}</strong>
       </div>
       <div class="metric-inline">
         <span>高于总体</span>
-        <strong>${row.uplift_vs_overall_pct_point}pt</strong>
+        <strong>${formatValue(row.uplift_vs_overall_pct_point, "pt")}</strong>
       </div>
     </article>
   `;
 }
 
-function createComparisonCard(row) {
-  const currentParticipants = row.current_participants ?? "-";
-  const baselineParticipants = row.baseline_participants ?? "-";
-  const currentRisk = row.current_high_risk_rate_pct ?? "-";
-  const baselineSleep = row.baseline_short_sleep_rate_pct ?? "-";
-  const currentRiskLabel = currentRisk === "-" ? "-" : `${currentRisk}%`;
-  const baselineSleepLabel = baselineSleep === "-" ? "-" : `${baselineSleep}%`;
+function createComparisonCard(row, dataset = "current") {
+  const meta = getDatasetMeta(dataset);
+  const baselineValue =
+    meta.comparisonMode === "risk"
+      ? row.baseline_high_risk_rate_pct
+      : row.baseline_short_sleep_rate_pct;
+  const baselineLabel =
+    meta.comparisonMode === "risk" ? "北美参考高风险率" : "历史短睡眠率";
+
   return `
     <article class="cohort-card">
       <div class="cohort-title">${row.group}</div>
-      <div class="cohort-meta">当前 ${currentParticipants} 人 / 历史 ${baselineParticipants} 人</div>
-      <div class="metric-inline">
-        <span>当前 PHQ-9 高风险</span>
-        <strong>${currentRiskLabel}</strong>
+      <div class="cohort-meta">
+        当前 ${formatValue(row.current_participants)} 人 / 参考 ${formatValue(row.baseline_participants)} 人
       </div>
       <div class="metric-inline">
-        <span>历史短睡眠率</span>
-        <strong>${baselineSleepLabel}</strong>
+        <span>${meta.riskLabel}</span>
+        <strong>${formatValue(row.current_high_risk_rate_pct, "%")}</strong>
+      </div>
+      <div class="metric-inline">
+        <span>${baselineLabel}</span>
+        <strong>${formatValue(baselineValue, "%")}</strong>
       </div>
     </article>
   `;
@@ -121,14 +273,17 @@ function initHomeProfileSwitcher() {
   const buttons = document.querySelectorAll("[data-home-group]");
 
   async function load(group) {
-    const data = await fetchJson(`/api/v1/population-profile?group_by=${group}&min_participants=80`);
+    const data = await fetchJson(
+      buildApiUrl("/api/v1/population-profile", {
+        group_by: group,
+        min_participants: 80,
+      })
+    );
     const topRows = data.rows.slice(0, 5);
     bars.innerHTML = topRows.map(createBarRow).join("");
     jsonEl.textContent = prettyJson(data);
     root.dataset.currentGroup = group;
-    buttons.forEach((button) => {
-      button.classList.toggle("is-active", button.dataset.homeGroup === group);
-    });
+    setButtonState(buttons, group, (button) => button.dataset.homeGroup);
   }
 
   buttons.forEach((button) => {
@@ -146,15 +301,24 @@ function initStudio() {
   const root = document.querySelector("[data-studio-root]");
   if (!root) return;
 
+  const state = {
+    dataset: "current",
+    comparisonGroup: "age_band",
+  };
+
   const form = root.querySelector("[data-profile-form]");
+  const groupSelect = form.querySelector('select[name="group_by"]');
   const bars = root.querySelector("[data-profile-bars]");
   const status = root.querySelector("[data-profile-status]");
   const jsonCode = root.querySelector("[data-live-json] code");
   const endpointLabel = root.querySelector("[data-endpoint-label]");
-  const endpointButtons = root.querySelectorAll("[data-endpoint-target]");
+  const endpointButtons = root.querySelectorAll("[data-endpoint-key]");
+  const datasetButtons = root.querySelectorAll("[data-dataset-button]");
+  const datasetStatus = root.querySelector("[data-dataset-status]");
   const cohortBoard = root.querySelector("[data-cohort-board]");
   const riskFactorBoard = root.querySelector("[data-risk-factor-board]");
   const thresholdForm = root.querySelector("[data-threshold-form]");
+  const thresholdInput = thresholdForm?.querySelector('input[name="threshold"]');
   const thresholdStatus = root.querySelector("[data-threshold-status]");
   const thresholdJson = root.querySelector("[data-threshold-json] code");
   const thresholdFlaggedN = root.querySelector("[data-threshold-flagged-n]");
@@ -164,69 +328,178 @@ function initStudio() {
   const comparisonBoard = root.querySelector("[data-cycle-comparison-board]");
   const comparisonJson = root.querySelector("[data-cycle-json] code");
   const comparisonButtons = root.querySelectorAll("[data-cycle-group]");
-
   const summaryShort = root.querySelector("[data-summary-short-sleep]");
   const summarySedentary = root.querySelector("[data-summary-sedentary]");
   const summaryElevated = root.querySelector("[data-summary-elevated]");
   const summaryRows = root.querySelector("[data-summary-rows]");
+  const summaryHighRiskLabel = root.querySelector("[data-summary-high-risk-label]");
+  const summaryScoreLabel = root.querySelector("[data-summary-score-label]");
+  const summaryCompareLabel = root.querySelector("[data-summary-compare-label]");
+  const summaryThresholdLabel = root.querySelector("[data-summary-threshold-label]");
+  const profileTitle = root.querySelector("[data-profile-title]");
+  const cohortTitle = root.querySelector("[data-cohort-title]");
+  const comparisonTitle = root.querySelector("[data-comparison-title]");
+  const thresholdInputLabel = root.querySelector("[data-threshold-input-label]");
+
+  function getMeta() {
+    return getDatasetMeta(state.dataset);
+  }
+
+  function buildStudioEndpoint(key) {
+    switch (key) {
+      case "summary":
+        return buildApiUrl("/api/v1/summary", { dataset: state.dataset });
+      case "profile":
+        return buildApiUrl("/api/v1/population-profile", {
+          dataset: state.dataset,
+          group_by: groupSelect.value,
+          min_participants: form.querySelector('input[name="min_participants"]').value,
+          min_age: form.querySelector('input[name="min_age"]').value,
+          max_age: form.querySelector('input[name="max_age"]').value,
+        });
+      case "priority-cohorts":
+        return buildApiUrl("/api/v1/priority-cohorts", {
+          dataset: state.dataset,
+          limit: 6,
+          min_participants: 100,
+        });
+      case "risk-factors":
+        return buildApiUrl("/api/v1/risk-factors", {
+          dataset: state.dataset,
+          limit: 6,
+          min_participants: 120,
+        });
+      case "cycle-comparison":
+        return buildApiUrl("/api/v1/cycle-comparison", {
+          dataset: state.dataset,
+          group_by: state.comparisonGroup,
+          min_participants: 80,
+        });
+      case "threshold-simulate":
+        return buildApiUrl("/api/v1/threshold-simulate", {
+          dataset: state.dataset,
+          threshold: thresholdInput?.value || getMeta().thresholdDefault,
+          weekly_capacity:
+            thresholdForm?.querySelector('input[name="weekly_capacity"]')?.value || 20,
+        });
+      default:
+        return buildApiUrl("/api/v1/summary", { dataset: state.dataset });
+    }
+  }
+
+  function applyDatasetMeta() {
+    const meta = getMeta();
+    datasetStatus.textContent = meta.branchStatus;
+    summaryHighRiskLabel.textContent = meta.riskLabel;
+    summaryScoreLabel.textContent = meta.scoreLabel;
+    summaryCompareLabel.textContent = meta.referenceLabel;
+    summaryThresholdLabel.textContent = "阈值10筛出率";
+    profileTitle.textContent = meta.profileTitle;
+    cohortTitle.textContent = meta.cohortTitle;
+    comparisonTitle.textContent = meta.comparisonTitle;
+    thresholdInputLabel.textContent = meta.thresholdLabel;
+    thresholdInput.max = String(meta.thresholdMax);
+    if (Number(thresholdInput.value) > meta.thresholdMax) {
+      thresholdInput.value = String(meta.thresholdDefault);
+    }
+    setSelectOptions(groupSelect, meta.profileGroups, groupSelect.value);
+    setButtonState(datasetButtons, state.dataset, (button) => button.dataset.datasetButton);
+  }
 
   async function refreshSummary() {
-    const data = await fetchJson("/api/v1/summary");
-    summaryShort.textContent = `${data.mental_health_signals.phq_high_risk_rate_pct}%`;
-    summarySedentary.textContent = `${data.mental_health_signals.mean_phq9_score}`;
-    summaryElevated.textContent = `${data.shared_signals.legacy_short_sleep_rate_pct}%`;
-    summaryRows.textContent = `${data.threshold_reference.flagged_weighted_pct}%`;
+    const data = await fetchJson(buildApiUrl("/api/v1/summary", { dataset: state.dataset }));
+    summaryShort.textContent = formatValue(data.mental_health_signals.phq_high_risk_rate_pct, "%");
+    summarySedentary.textContent = formatValue(data.mental_health_signals.mean_phq9_score);
+    summaryElevated.textContent = formatValue(data.shared_signals.legacy_short_sleep_rate_pct, "%");
+    summaryRows.textContent = formatValue(data.threshold_reference.flagged_weighted_pct, "%");
   }
 
   async function refreshProfile(formData) {
-    const query = new URLSearchParams(formData).toString();
-    const endpoint = `/api/v1/population-profile?${query}`;
+    const params = Object.fromEntries(formData.entries());
+    params.dataset = state.dataset;
+    const endpoint = buildApiUrl("/api/v1/population-profile", params);
     status.textContent = "加载中";
     endpointLabel.textContent = endpoint;
     const data = await fetchJson(endpoint);
     bars.innerHTML = data.rows.slice(0, 8).map(createBarRow).join("");
     jsonCode.textContent = prettyJson(data);
     status.textContent = "已更新";
-    endpointButtons.forEach((button) => {
-      button.classList.toggle("is-active", button.dataset.endpointTarget === endpoint);
-    });
+    setButtonState(endpointButtons, "profile", (button) => button.dataset.endpointKey);
   }
 
   async function refreshCohorts() {
-    const data = await fetchJson("/api/v1/priority-cohorts?limit=6&min_participants=100");
-    cohortBoard.innerHTML = data.rows.map(createCohortCard).join("");
+    const data = await fetchJson(
+      buildApiUrl("/api/v1/priority-cohorts", {
+        dataset: state.dataset,
+        limit: 6,
+        min_participants: 100,
+      })
+    );
+    cohortBoard.innerHTML = data.rows.map((row) => createCohortCard(row, state.dataset)).join("");
   }
 
   async function refreshRiskFactors() {
     if (!riskFactorBoard) return;
-    const data = await fetchJson("/api/v1/risk-factors?limit=6&min_participants=120");
+    const data = await fetchJson(
+      buildApiUrl("/api/v1/risk-factors", {
+        dataset: state.dataset,
+        limit: 6,
+        min_participants: 120,
+      })
+    );
     riskFactorBoard.innerHTML = data.rows.map(createRiskFactorCard).join("");
   }
 
-  async function refreshComparison(group = "age_band") {
+  async function refreshComparison(group = state.comparisonGroup) {
     if (!comparisonBoard || !comparisonJson) return;
-    const endpoint = `/api/v1/cycle-comparison?group_by=${group}&min_participants=80`;
-    const data = await fetchJson(endpoint);
-    comparisonBoard.innerHTML = data.rows.slice(0, 6).map(createComparisonCard).join("");
-    comparisonJson.textContent = prettyJson(data);
-    comparisonButtons.forEach((button) => {
-      button.classList.toggle("is-active", button.dataset.cycleGroup === group);
+    state.comparisonGroup = group;
+    const endpoint = buildApiUrl("/api/v1/cycle-comparison", {
+      dataset: state.dataset,
+      group_by: group,
+      min_participants: 80,
     });
+    const data = await fetchJson(endpoint);
+    comparisonBoard.innerHTML = data.rows
+      .slice(0, 6)
+      .map((row) => createComparisonCard(row, state.dataset))
+      .join("");
+    comparisonJson.textContent = prettyJson(data);
+    setButtonState(comparisonButtons, group, (button) => button.dataset.cycleGroup);
   }
 
   async function refreshThreshold(formData) {
     if (!thresholdForm || !thresholdJson) return;
-    const query = new URLSearchParams(formData).toString();
-    const endpoint = `/api/v1/threshold-simulate?${query}`;
+    const params = Object.fromEntries(formData.entries());
+    params.dataset = state.dataset;
+    const endpoint = buildApiUrl("/api/v1/threshold-simulate", params);
     thresholdStatus.textContent = "模拟中";
-    endpointLabel.textContent = endpoint;
     const data = await fetchJson(endpoint);
-    thresholdFlaggedN.textContent = `${data.flagged_n}`;
-    thresholdFlaggedPct.textContent = `${data.flagged_weighted_pct}%`;
-    thresholdWeeks.textContent = `${data.estimated_counselor_weeks}`;
-    thresholdDelta.textContent = `${data.delta_vs_threshold_10_pct_point}pt`;
+    thresholdFlaggedN.textContent = formatValue(data.flagged_n);
+    thresholdFlaggedPct.textContent = formatValue(data.flagged_weighted_pct, "%");
+    thresholdWeeks.textContent = formatValue(data.estimated_counselor_weeks);
+    thresholdDelta.textContent = formatValue(data.delta_vs_threshold_10_pct_point, "pt");
     thresholdJson.textContent = prettyJson(data);
     thresholdStatus.textContent = `阈值 ${data.threshold}`;
+  }
+
+  async function loadEndpointKey(key) {
+    const endpoint = buildStudioEndpoint(key);
+    endpointLabel.textContent = endpoint;
+    const data = await fetchJson(endpoint);
+    jsonCode.textContent = prettyJson(data);
+    setButtonState(endpointButtons, key, (button) => button.dataset.endpointKey);
+  }
+
+  async function reloadStudioBranch() {
+    applyDatasetMeta();
+    await Promise.all([
+      refreshSummary(),
+      refreshProfile(new FormData(form)),
+      refreshCohorts(),
+      refreshRiskFactors(),
+      refreshComparison(state.comparisonGroup),
+      refreshThreshold(new FormData(thresholdForm)),
+    ]);
   }
 
   form.addEventListener("submit", async (event) => {
@@ -241,14 +514,21 @@ function initStudio() {
 
   endpointButtons.forEach((button) => {
     button.addEventListener("click", async () => {
-      endpointButtons.forEach((item) => item.classList.remove("is-active"));
-      button.classList.add("is-active");
-      const target = button.dataset.endpointTarget;
-      endpointLabel.textContent = target;
       try {
-        const data = await fetchJson(target);
-        jsonCode.textContent = prettyJson(data);
+        await loadEndpointKey(button.dataset.endpointKey);
       } catch (error) {
+        jsonCode.textContent = error.message;
+      }
+    });
+  });
+
+  datasetButtons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      state.dataset = button.dataset.datasetButton;
+      try {
+        await reloadStudioBranch();
+      } catch (error) {
+        status.textContent = "切换失败";
         jsonCode.textContent = error.message;
       }
     });
@@ -282,18 +562,22 @@ function initStudio() {
     });
   });
 
-  Promise.all([
-    refreshSummary(),
-    refreshCohorts(),
-    refreshRiskFactors(),
-    refreshComparison(),
-  ]).catch(() => {});
+  applyDatasetMeta();
+  reloadStudioBranch().catch(() => {});
 }
 
 function initReports() {
   const root = document.querySelector("[data-report-root]");
   if (!root) return;
-  const buttons = root.querySelectorAll("[data-audience]");
+
+  const state = {
+    dataset: "current",
+    audience: "researcher",
+  };
+
+  const audienceButtons = root.querySelectorAll("[data-audience]");
+  const datasetButtons = root.querySelectorAll("[data-report-dataset-button]");
+  const branchStatus = root.querySelector("[data-report-branch-status]");
   const headline = root.querySelector("[data-report-headline]");
   const focus = root.querySelector("[data-report-focus]");
   const notes = root.querySelector("[data-report-notes]");
@@ -301,29 +585,250 @@ function initReports() {
   const endpoint = root.querySelector("[data-report-endpoint]");
   const jsonCode = root.querySelector("[data-report-json] code");
 
-  async function loadReport(audience) {
-    const url = `/api/v1/reports/${audience}`;
+  async function loadReport() {
+    const meta = getDatasetMeta(state.dataset);
+    branchStatus.textContent = meta.branchStatus;
+    const url = buildApiUrl(`/api/v1/reports/${state.audience}`, { dataset: state.dataset });
     const data = await fetchJson(url);
     headline.textContent = data.headline;
     focus.innerHTML = data.focus_points.map((item) => `<li>${item}</li>`).join("");
     notes.innerHTML = data.shared_notes.map((item) => `<li>${item}</li>`).join("");
-    cohorts.innerHTML = data.top_cohorts.map(createCohortCard).join("");
+    cohorts.innerHTML = data.top_cohorts
+      .map((row) => createCohortCard(row, state.dataset))
+      .join("");
     endpoint.textContent = url;
     jsonCode.textContent = prettyJson(data);
-    buttons.forEach((button) => {
-      button.classList.toggle("is-active", button.dataset.audience === audience);
-    });
+    setButtonState(audienceButtons, state.audience, (button) => button.dataset.audience);
+    setButtonState(datasetButtons, state.dataset, (button) => button.dataset.reportDatasetButton);
   }
 
-  buttons.forEach((button) => {
+  audienceButtons.forEach((button) => {
     button.addEventListener("click", async () => {
+      state.audience = button.dataset.audience;
       try {
-        await loadReport(button.dataset.audience);
+        await loadReport();
       } catch (error) {
         jsonCode.textContent = error.message;
       }
     });
   });
+
+  datasetButtons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      state.dataset = button.dataset.reportDatasetButton;
+      try {
+        await loadReport();
+      } catch (error) {
+        jsonCode.textContent = error.message;
+      }
+    });
+  });
+
+  loadReport().catch(() => {});
+}
+
+function initWorkbench() {
+  const root = document.querySelector("[data-workbench-root]");
+  if (!root) return;
+
+  const state = {
+    selectedDataset: null,
+    manualRows: [],
+  };
+
+  const syntheticForm = root.querySelector("[data-synthetic-form]");
+  const manualRowForm = root.querySelector("[data-manual-row-form]");
+  const manualDatasetForm = root.querySelector("[data-manual-dataset-form]");
+  const manualRowsEl = root.querySelector("[data-manual-rows]");
+  const manualCount = root.querySelector("[data-manual-count]");
+  const clearManualButton = root.querySelector("[data-manual-clear]");
+  const datasetList = root.querySelector("[data-custom-dataset-list]");
+  const status = root.querySelector("[data-workbench-status]");
+  const labelEl = root.querySelector("[data-workbench-label]");
+  const highRiskEl = root.querySelector("[data-workbench-high-risk]");
+  const scoreEl = root.querySelector("[data-workbench-score]");
+  const sleepEl = root.querySelector("[data-workbench-sleep]");
+  const cohortsEl = root.querySelector("[data-workbench-cohorts]");
+  const riskFactorsEl = root.querySelector("[data-workbench-risk-factors]");
+  const reportHeadline = root.querySelector("[data-workbench-report-headline]");
+  const reportFocus = root.querySelector("[data-workbench-report-focus]");
+  const jsonCode = root.querySelector("[data-workbench-json] code");
+
+  function renderManualRows() {
+    manualCount.textContent = `${state.manualRows.length} 行`;
+    if (!state.manualRows.length) {
+      manualRowsEl.innerHTML =
+        '<article class="manual-row-card"><strong>还没有手工样本</strong><span>先用左侧表单添加几行，凑够 3 行就能生成一个临时分支。</span></article>';
+      return;
+    }
+    manualRowsEl.innerHTML = state.manualRows
+      .map(
+        (row, index) => `
+          <article class="manual-row-card">
+            <strong>样本 ${index + 1}</strong>
+            <span>
+              年龄 ${escapeHtml(row.age)} / ${escapeHtml(row.gender)} / 睡眠 ${escapeHtml(row.sleep_hours)}h /
+              ${escapeHtml(row.income_band)} / 慢病 ${escapeHtml(row.chronic_condition_count)} / 分数 ${escapeHtml(row.mental_health_score)}
+            </span>
+          </article>
+        `
+      )
+      .join("");
+  }
+
+  function renderDatasetList(catalog, selectedDataset = state.selectedDataset) {
+    const datasets = catalog?.datasets || [];
+    if (!datasets.length) {
+      datasetList.innerHTML = '<span class="status-dot muted-status">生成后会显示在这里</span>';
+      return;
+    }
+    datasetList.innerHTML = datasets
+      .map(
+        (item) => `
+          <button
+            class="endpoint-pick ${item.id === selectedDataset ? "is-active" : ""}"
+            type="button"
+            data-custom-dataset="${escapeHtml(item.id)}"
+          >
+            ${escapeHtml(item.label)} · ${escapeHtml(item.scale)}
+          </button>
+        `
+      )
+      .join("");
+
+    datasetList.querySelectorAll("[data-custom-dataset]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        try {
+          await loadDataset(button.dataset.customDataset);
+        } catch (error) {
+          status.textContent = error.message;
+          jsonCode.textContent = error.message;
+        }
+      });
+    });
+  }
+
+  async function refreshCatalog(preferredDataset = state.selectedDataset) {
+    const catalog = await fetchJson("/api/v1/custom-datasets");
+    renderDatasetList(catalog, preferredDataset);
+    if (!preferredDataset && catalog.datasets?.length) {
+      await loadDataset(catalog.datasets[0].id);
+    }
+    return catalog;
+  }
+
+  async function loadDataset(datasetId) {
+    state.selectedDataset = datasetId;
+    status.textContent = "正在加载临时分支";
+    const [summary, cohorts, riskFactors, report] = await Promise.all([
+      fetchJson(buildApiUrl("/api/v1/summary", { dataset: datasetId })),
+      fetchJson(
+        buildApiUrl("/api/v1/priority-cohorts", {
+          dataset: datasetId,
+          limit: 6,
+          min_participants: 3,
+        })
+      ),
+      fetchJson(
+        buildApiUrl("/api/v1/risk-factors", {
+          dataset: datasetId,
+          limit: 6,
+          min_participants: 3,
+        })
+      ),
+      fetchJson(buildApiUrl("/api/v1/reports/researcher", { dataset: datasetId })),
+    ]);
+
+    labelEl.textContent = summary.selected_branch.label;
+    highRiskEl.textContent = formatValue(summary.mental_health_signals.high_risk_rate_pct, "%");
+    scoreEl.textContent = formatValue(summary.mental_health_signals.mean_score);
+    sleepEl.textContent = formatValue(summary.shared_signals.current_short_sleep_rate_pct, "%");
+    cohortsEl.innerHTML = cohorts.rows.length
+      ? cohorts.rows.map((row) => createCohortCard(row, datasetId)).join("")
+      : '<article class="cohort-card"><strong>样本还太少</strong><p>再增加几行，重点人群组合会更稳定。</p></article>';
+    riskFactorsEl.innerHTML = riskFactors.rows.length
+      ? riskFactors.rows.map(createRiskFactorCard).join("")
+      : '<article class="cohort-card"><strong>分层还不够丰富</strong><p>补充更多年龄、睡眠和收入差异后，这里会出现更有解释力的结果。</p></article>';
+    reportHeadline.textContent = report.headline;
+    reportFocus.innerHTML = report.focus_points.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    jsonCode.textContent = prettyJson(summary);
+    status.textContent = `当前分支: ${summary.selected_branch.label}`;
+    await refreshCatalog(datasetId);
+  }
+
+  syntheticForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    status.textContent = "正在生成演示分支";
+    try {
+      const formData = new FormData(syntheticForm);
+      const payload = Object.fromEntries(formData.entries());
+      if (!payload.seed) {
+        delete payload.seed;
+      } else {
+        payload.seed = Number(payload.seed);
+      }
+      payload.sample_size = Number(payload.sample_size);
+      const response = await fetchJson("/api/v1/custom-datasets/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      await loadDataset(response.dataset.id);
+    } catch (error) {
+      status.textContent = "生成失败";
+      jsonCode.textContent = error.message;
+    }
+  });
+
+  manualRowForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const row = Object.fromEntries(new FormData(manualRowForm).entries());
+    row.age = Number(row.age);
+    row.sleep_hours = Number(row.sleep_hours);
+    row.bmi = row.bmi === "" ? null : Number(row.bmi);
+    row.chronic_condition_count = Number(row.chronic_condition_count);
+    row.mental_health_score = Number(row.mental_health_score);
+    row.weight = Number(row.weight);
+    state.manualRows.push(row);
+    renderManualRows();
+    status.textContent = `已添加 ${state.manualRows.length} 行手工样本`;
+  });
+
+  manualDatasetForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (state.manualRows.length < 3) {
+      status.textContent = "至少先添加 3 行手工样本";
+      return;
+    }
+    status.textContent = "正在生成手工分支";
+    try {
+      const formValues = Object.fromEntries(new FormData(manualDatasetForm).entries());
+      const response = await fetchJson("/api/v1/custom-datasets/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formValues.name,
+          scale: formValues.scale,
+          rows: state.manualRows,
+        }),
+      });
+      state.manualRows = [];
+      renderManualRows();
+      await loadDataset(response.dataset.id);
+    } catch (error) {
+      status.textContent = "生成失败";
+      jsonCode.textContent = error.message;
+    }
+  });
+
+  clearManualButton?.addEventListener("click", () => {
+    state.manualRows = [];
+    renderManualRows();
+    status.textContent = "已清空手工样本列表";
+  });
+
+  renderManualRows();
+  refreshCatalog().catch(() => {});
 }
 
 function initExamples() {
@@ -526,6 +1031,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initHomeProfileSwitcher();
   initStudio();
   initReports();
+  initWorkbench();
   initExamples();
   initVisionMap();
 });

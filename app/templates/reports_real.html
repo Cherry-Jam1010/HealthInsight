@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}HealthInsight | 机构报告{% endblock %}
+
+{% block content %}
+<section class="page-hero section-shell">
+  <p class="eyebrow">Operational Report</p>
+  <h1>把分析结果整理成机构能直接阅读、讨论和转发的正式报告。</h1>
+  <p class="hero-lead">
+    这里不只是切换不同受众的简报，而是把整体风险水平、数据质量、优先人群、行动建议和服务承接压力整合成一份成品报告。
+    你可以切换数据源、设置机构名称和转介能力，并直接下载 Markdown 版本。
+  </p>
+  <div class="print-actions">
+    <button type="button" class="button button-secondary" onclick="window.print()">打印报告</button>
+    <button type="button" class="button button-ghost" onclick="window.print()">导出 PDF</button>
+  </div>
+</section>
+
+<section class="section-shell report-layout" data-operational-report-root>
+  <article class="panel reveal-on-scroll">
+    <div class="section-heading compact">
+      <p class="section-tag">报告控制台</p>
+      <h2>选择数据集并生成报告</h2>
+    </div>
+
+    <div class="report-tabs">
+      <button class="chip-button is-active" type="button" data-report-dataset-button="current">北美 / NHANES</button>
+      <button class="chip-button" type="button" data-report-dataset-button="charls">中国 / CHARLS</button>
+      <span class="status-dot" data-report-branch-status>北美当前分支</span>
+    </div>
+
+    <div class="endpoint-mini-list" data-report-custom-datasets>
+      {% if custom_datasets.datasets %}
+        {% for item in custom_datasets.datasets %}
+        <button class="endpoint-pick" type="button" data-report-custom-dataset="{{ item.id }}">
+          {{ item.label }} · {{ item.scale }}
+        </button>
+        {% endfor %}
+      {% else %}
+        <span class="status-dot muted-status">工作台里导入的数据集会显示在这里</span>
+      {% endif %}
+    </div>
+
+    <div class="report-tabs">
+      <button class="chip-button is-active" type="button" data-audience="manager">管理团队</button>
+      <button class="chip-button" type="button" data-audience="researcher">研究团队</button>
+      <button class="chip-button" type="button" data-audience="clinical">临床团队</button>
+      <button class="chip-button" type="button" data-audience="engineering">技术团队</button>
+    </div>
+
+    <form class="control-form report-control-grid compact-control-grid" data-report-form>
+      <label>
+        机构名称
+        <input type="text" name="organization_name" value="示例机构" maxlength="120" />
+      </label>
+      <label>
+        报告标题
+        <input type="text" name="report_title" value="示例机构心理健康风险识别报告" maxlength="160" />
+      </label>
+      <label>
+        风险阈值
+        <input type="number" name="threshold" value="10" min="0" max="30" />
+      </label>
+      <label>
+        每周承接人数
+        <input type="number" name="weekly_capacity" value="20" min="1" max="10000" />
+      </label>
+      <button type="submit" class="button button-primary wide">刷新正式报告</button>
+      <button type="button" class="button button-secondary wide" data-report-download>下载 Markdown</button>
+    </form>
+  </article>
+
+  <section class="metric-board reveal-on-scroll">
+    <article class="metric-tile">
+      <span>风险等级</span>
+      <strong data-report-risk-level>{{ initial_report.risk_level.label }}</strong>
+      <small>基于加权高风险率的分级</small>
+    </article>
+    <article class="metric-tile">
+      <span>高风险占比</span>
+      <strong data-report-high-risk>{{ initial_report.risk_level.high_risk_rate_pct }}%</strong>
+      <small>PHQ-9 ≥ {{ initial_report.capacity_plan.threshold }} 的加权比例</small>
+    </article>
+    <article class="metric-tile">
+      <span>平均量表分</span>
+      <strong data-report-mean-score>{{ initial_report.risk_level.mean_score }}</strong>
+      <small>全量样本 PHQ-9 平均得分</small>
+    </article>
+    <article class="metric-tile">
+      <span>首轮承接周数</span>
+      <strong data-report-capacity-weeks>{{ initial_report.capacity_plan.estimated_counselor_weeks }}</strong>
+      <small>按当前阈值和周承接 {{ initial_report.capacity_plan.weekly_capacity }} 人估算</small>
+    </article>
+  </section>
+
+  <div class="section-grid-two compact-section-grid">
+    <article class="panel panel-dark reveal-on-scroll">
+      <p class="section-tag">执行摘要</p>
+      <h2 data-report-headline>{{ initial_report.audience_headline or initial_report.report_title }}</h2>
+      <ul class="clean-list light compact-list" data-report-focus>
+        {% for point in initial_report.executive_summary %}
+        <li>{{ point }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="panel reveal-on-scroll">
+      <p class="section-tag">数据质量</p>
+      <div class="quality-grid compact-quality-grid" data-report-quality>
+        {% for item in initial_report.data_quality.checks %}
+        <article class="insight-card">
+          <strong>{{ item.label }}</strong>
+          <span>{{ item.value_pct }}% / {{ item.status }}</span>
+        </article>
+        {% endfor %}
+      </div>
+    </article>
+  </div>
+
+  <section class="section-grid-two compact-section-grid">
+    <article class="panel reveal-on-scroll">
+      <div class="section-heading compact">
+        <p class="section-tag">关键发现</p>
+        <h2>哪些结论适合直接进入周会或汇报</h2>
+      </div>
+      <div class="insight-grid compact-insight-grid" data-report-findings>
+        {% for item in initial_report.key_findings %}
+        <article class="insight-card">
+          <strong>{{ item.title }}</strong>
+          <p>{{ item.detail }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </article>
+
+    <article class="panel reveal-on-scroll">
+      <div class="section-heading compact">
+        <p class="section-tag">优先行动</p>
+        <h2>报告输出后下一步做什么</h2>
+      </div>
+      <div class="insight-grid compact-insight-grid" data-report-actions>
+        {% for item in initial_report.priority_actions %}
+        <article class="insight-card">
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.owner }} · {{ item.timeline }}</span>
+          <p>{{ item.detail }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </article>
+  </section>
+
+  <section class="section-grid-two compact-section-grid">
+    <article class="panel reveal-on-scroll">
+      <div class="section-heading compact">
+        <p class="section-tag">重点人群</p>
+        <h2>优先筛查和转介对象</h2>
+      </div>
+      <div class="cohort-board compact-card-grid" data-report-cohorts>
+        {% for row in initial_report.priority_cohorts %}
+        <article class="cohort-card">
+          <div class="cohort-title">{{ row.segment_label }}</div>
+          <div class="cohort-meta">{{ row.participants }} 人样本</div>
+          <div class="metric-inline">
+            <span>高风险占比</span>
+            <strong>{{ row.high_risk_rate_pct }}%</strong>
+          </div>
+          <div class="metric-inline">
+            <span>平均量表分</span>
+            <strong>{{ row.mean_mental_health_score }}</strong>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </article>
+
+    <article class="panel reveal-on-scroll compact-brief-panel">
+      <div class="section-heading compact">
+        <p class="section-tag">使用边界</p>
+        <h2>保留必要说明，不占太多空间</h2>
+      </div>
+      <ul class="clean-list compact-list">
+        {% for note in initial_report.notes %}
+        <li>{{ note }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </section>
+
+  <details class="detail-panel reveal-on-scroll">
+    <summary>查看 Markdown 与 JSON 技术明细</summary>
+    <div class="detail-grid compact-top-gap">
+      <article class="panel panel-dark detail-card">
+        <div class="section-heading spread compact">
+          <div>
+            <p class="section-tag">Markdown 预览</p>
+            <h2>可直接转发或继续编辑</h2>
+          </div>
+          <span class="api-path" data-report-endpoint>/api/v1/institution-report?dataset=current</span>
+        </div>
+        <pre class="dark-pre subtle compact-pre" data-report-markdown><code>{{ initial_report.report_markdown }}</code></pre>
+      </article>
+
+      <article class="panel panel-dark detail-card">
+        <div class="section-heading spread compact">
+          <div>
+            <p class="section-tag">正式报告 JSON</p>
+            <h2>接口返回</h2>
+          </div>
+          <span class="api-path">/api/v1/institution-report</span>
+        </div>
+        <pre class="dark-pre subtle compact-pre" data-report-json><code>{{ initial_report_json }}</code></pre>
+      </article>
+    </div>
+  </details>
+
+  <!-- ========== 打印详细区块（网页隐藏，仅打印时显示）========== -->
+  <section class="print-only report-print-detail" aria-label="报告详细数据">
+    <h2 class="print-section-title">报告详细数据</h2>
+
+    <article class="print-block" data-print-capacity-detail>
+      <h3>阈值模拟详情</h3>
+      <p class="print-note">以下为阈值 <strong data-print-threshold>{{ initial_report.capacity_plan.threshold }}</strong> 的模拟结果：</p>
+      <ul class="print-data-list">
+        <li><strong>命中人数：</strong><span data-print-flagged-n>{{ initial_report.capacity_plan.flagged_n }}</span> 人</li>
+        <li><strong>加权占比：</strong><span data-print-flagged-pct>{{ initial_report.capacity_plan.flagged_weighted_pct }}</span>%</li>
+        <li><strong>高风险人群平均分：</strong><span data-print-mean-score>{{ initial_report.capacity_plan.mean_flagged_mental_health_score }}</span></li>
+        <li><strong>相比默认阈值 <span data-print-default-threshold>{{ initial_report.capacity_plan.default_threshold }}</span>：</strong><span data-print-delta-n>{{ initial_report.capacity_plan.delta_vs_default_threshold_n }}</span> 人（<span data-print-delta-pct>{{ initial_report.capacity_plan.delta_vs_threshold_10_pct_point }}</span> 个百分点）</li>
+        <li><strong>建议用途：</strong><span data-print-recommendation>{{ initial_report.capacity_plan.recommended_use }}</span></li>
+      </ul>
+    </article>
+
+    <article class="print-block" data-print-risk-factors>
+      <h3>风险因子排名（Top 5）</h3>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>维度 / 分层</th>
+            <th>样本量</th>
+            <th>高风险率</th>
+            <th>高于总体</th>
+          </tr>
+        </thead>
+        <tbody data-print-risk-factors-body>
+          {% for row in initial_report.key_risk_factors %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.dimension }} / {{ row.group }}</td>
+            <td>{{ row.participants }} 人</td>
+            <td>{{ row.high_risk_rate_pct }}%</td>
+            <td>+{{ row.uplift_vs_overall_pct_point }} pt</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </article>
+
+    <article class="print-block" data-print-comparison>
+      <h3>年龄段对照（当前 vs 参考分支）</h3>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th>年龄段</th>
+            <th>当前高风险率</th>
+            <th>参考高风险率</th>
+            <th>变化</th>
+          </tr>
+        </thead>
+        <tbody data-print-comparison-body>
+          {% for row in initial_report.comparison_highlights %}
+          <tr>
+            <td>{{ row.group }}</td>
+            <td>{{ row.current_high_risk_rate_pct }}%</td>
+            <td>{{ row.legacy_high_risk_rate_pct }}%</td>
+            <td>{{ row.change_pct_point }} pt</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </article>
+
+    <article class="print-block" data-print-cohorts-detail>
+      <h3>重点人群完整数据（Top 5）</h3>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>人群标签</th>
+            <th>样本量</th>
+            <th>高风险率</th>
+            <th>平均分</th>
+            <th>高于总体</th>
+          </tr>
+        </thead>
+        <tbody data-print-cohorts-body>
+          {% for row in initial_report.priority_cohorts %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.segment_label }}</td>
+            <td>{{ row.participants }} 人</td>
+            <td>{{ row.high_risk_rate_pct }}%</td>
+            <td>{{ row.mean_mental_health_score }}</td>
+            <td>+{{ row.uplift_vs_overall_pct_point }} pt</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </article>
+  </section>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/operational.css') }}?v=20260622c" />
+<script src="{{ url_for('static', path='/js/operational.js') }}?v=20260622c" defer></script>
+{% endblock %}

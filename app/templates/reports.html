@@ -13,6 +13,12 @@
 
 <section class="section-shell report-layout" data-report-root>
   <div class="report-tabs">
+    <button class="chip-button is-active" type="button" data-report-dataset-button="current">北美 / NHANES</button>
+    <button class="chip-button" type="button" data-report-dataset-button="charls">中国 / CHARLS</button>
+    <span class="status-dot" data-report-branch-status>北美当前分支</span>
+  </div>
+
+  <div class="report-tabs">
     <button class="chip-button is-active" type="button" data-audience="researcher">研究团队</button>
     <button class="chip-button" type="button" data-audience="manager">管理团队</button>
     <button class="chip-button" type="button" data-audience="clinical">临床团队</button>
@@ -69,7 +75,7 @@
         <p class="section-tag">实时结果</p>
         <h2>当前简报返回内容</h2>
       </div>
-      <span class="api-path" data-report-endpoint>/api/v1/reports/researcher</span>
+      <span class="api-path" data-report-endpoint>/api/v1/reports/researcher?dataset=current</span>
     </div>
     <pre class="dark-pre subtle" data-report-json><code>{{ initial_report_json }}</code></pre>
   </section>

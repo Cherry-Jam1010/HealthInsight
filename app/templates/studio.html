@@ -15,6 +15,13 @@
 <section class="section-shell studio-layout" data-studio-root>
   <aside class="studio-sidebar panel reveal-on-scroll">
     <p class="section-tag">演示控制台</p>
+    <div class="chip-row">
+      <button class="chip-button is-active" type="button" data-dataset-button="current">北美 / NHANES</button>
+      <button class="chip-button" type="button" data-dataset-button="charls">中国 / CHARLS</button>
+    </div>
+    <div class="endpoint-mini-list">
+      <span class="status-dot" data-dataset-status>北美当前分支</span>
+    </div>
     <form class="control-form" data-profile-form>
       <label>
         分组维度
@@ -46,22 +53,22 @@
     </form>
 
     <div class="endpoint-mini-list">
-      <button class="endpoint-pick is-active" type="button" data-endpoint-target="/api/v1/summary">
+      <button class="endpoint-pick is-active" type="button" data-endpoint-key="summary">
         平台总览
       </button>
-      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/population-profile?group_by=income_band">
+      <button class="endpoint-pick" type="button" data-endpoint-key="profile">
         风险画像
       </button>
-      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/priority-cohorts">
+      <button class="endpoint-pick" type="button" data-endpoint-key="priority-cohorts">
         重点组合
       </button>
-      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/risk-factors">
+      <button class="endpoint-pick" type="button" data-endpoint-key="risk-factors">
         风险因素
       </button>
-      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/cycle-comparison?group_by=age_band">
+      <button class="endpoint-pick" type="button" data-endpoint-key="cycle-comparison">
         双周期对照
       </button>
-      <button class="endpoint-pick" type="button" data-endpoint-target="/api/v1/threshold-simulate?threshold=10&weekly_capacity=20">
+      <button class="endpoint-pick" type="button" data-endpoint-key="threshold-simulate">
         阈值模拟
       </button>
     </div>
@@ -70,19 +77,19 @@
   <div class="studio-main">
     <section class="metric-board reveal-on-scroll">
       <article class="metric-tile">
-        <span>PHQ-9 高风险</span>
+        <span data-summary-high-risk-label>PHQ-9 高风险</span>
         <strong data-summary-short-sleep>{{ summary.mental_health_signals.phq_high_risk_rate_pct }}%</strong>
       </article>
       <article class="metric-tile">
-        <span>平均 PHQ-9</span>
+        <span data-summary-score-label>平均 PHQ-9</span>
         <strong data-summary-sedentary>{{ summary.mental_health_signals.mean_phq9_score }}</strong>
       </article>
       <article class="metric-tile">
-        <span>历史短睡眠率</span>
+        <span data-summary-compare-label>历史短睡眠率</span>
         <strong data-summary-elevated>{{ summary.shared_signals.legacy_short_sleep_rate_pct }}%</strong>
       </article>
       <article class="metric-tile">
-        <span>阈值10筛出率</span>
+        <span data-summary-threshold-label>阈值10筛出率</span>
         <strong data-summary-rows>{{ summary.threshold_reference.flagged_weighted_pct }}%</strong>
       </article>
     </section>
@@ -92,7 +99,7 @@
         <div class="section-heading spread compact">
           <div>
             <p class="section-tag">画像结果</p>
-            <h2>当前分组下的 PHQ-9 高风险对比</h2>
+            <h2 data-profile-title>当前分组下的 PHQ-9 高风险对比</h2>
           </div>
           <span class="status-dot" data-profile-status>已载入</span>
         </div>
@@ -107,7 +114,10 @@
           </div>
           <span class="api-path" data-endpoint-label>/api/v1/summary</span>
         </div>
-        <pre class="dark-pre" data-live-json><code>{{ summary_json }}</code></pre>
+        <details class="detail-panel">
+          <summary>查看接口返回 JSON</summary>
+          <pre class="dark-pre" data-live-json><code>{{ summary_json }}</code></pre>
+        </details>
       </article>
     </section>
 
@@ -115,7 +125,7 @@
       <div class="section-heading spread compact">
         <div>
           <p class="section-tag">重点组合</p>
-          <h2>当前最值得优先纳入筛查与外展的人群</h2>
+          <h2 data-cohort-title>当前最值得优先纳入筛查与外展的人群</h2>
         </div>
         <button class="ghost-chip" type="button" data-refresh-cohorts>刷新结果</button>
       </div>
@@ -142,7 +152,7 @@
         <div class="section-heading spread compact">
           <div>
             <p class="section-tag">双周期对照</p>
-            <h2>同一类人群，当前风险和历史睡眠背景一起看</h2>
+            <h2 data-comparison-title>同一类人群，当前风险和历史睡眠背景一起看</h2>
           </div>
           <div class="chip-row">
             <button class="chip-button is-active" type="button" data-cycle-group="age_band">按年龄</button>
@@ -205,8 +215,8 @@
         </div>
         <form class="control-form inline-control-form" data-threshold-form>
           <label>
-            PHQ-9 阈值
-            <input type="number" name="threshold" value="{{ threshold.threshold }}" min="0" max="27" />
+            <span data-threshold-input-label>PHQ-9 阈值</span>
+            <input type="number" name="threshold" value="{{ threshold.threshold }}" min="0" max="30" />
           </label>
           <label>
             每周可承接人数
@@ -232,7 +242,10 @@
             <strong data-threshold-delta>{{ threshold.delta_vs_threshold_10_pct_point }}pt</strong>
           </article>
         </div>
-        <pre class="dark-pre subtle" data-threshold-json><code>{{ threshold_json }}</code></pre>
+        <details class="detail-panel">
+          <summary>查看接口返回 JSON</summary>
+          <pre class="dark-pre subtle" data-threshold-json><code>{{ threshold_json }}</code></pre>
+        </details>
       </article>
 
       <article class="panel panel-dark reveal-on-scroll">
@@ -240,7 +253,10 @@
           <p class="section-tag">双周期接口返回</p>
           <h2>当前对照结果</h2>
         </div>
-        <pre class="dark-pre subtle" data-cycle-json><code>{{ comparison_json }}</code></pre>
+        <details class="detail-panel">
+          <summary>查看接口返回 JSON</summary>
+          <pre class="dark-pre subtle" data-cycle-json><code>{{ comparison_json }}</code></pre>
+        </details>
       </article>
     </section>
   </div>

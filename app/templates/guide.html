@@ -45,18 +45,18 @@
       </article>
       <article>
         <span>第二步</span>
-        <h3>打开在线演示</h3>
-        <p>看重点人群、风险画像、双周期对照和阈值模拟。</p>
+        <h3>进入工作台</h3>
+        <p>导入你自己的数据，或生成演示数据，查看分析结果。</p>
       </article>
       <article>
         <span>第三步</span>
         <h3>打开报告中心</h3>
-        <p>把同一份结果切换成研究、管理或临床能看懂的版本。</p>
+        <p>把同一份结果切换成研究、管理或临床能看懂的版本，下载 Markdown。</p>
       </article>
     </div>
     <div class="hero-actions">
       <a class="button button-primary" href="/">打开首页</a>
-      <a class="button button-secondary" href="/studio">打开在线演示</a>
+      <a class="button button-secondary" href="/workbench">进入工作台</a>
       <a class="button button-secondary" href="/reports">打开报告中心</a>
     </div>
   </article>
@@ -130,13 +130,13 @@
       <li>第一步：`/api/v1/summary`</li>
       <li>第二步：`/api/v1/cycle-comparison?group_by=age_band`</li>
     </ul>
-    <pre class="dark-pre subtle"><code>{{ summary_json }}</code></pre>
+    <pre class="dark-pre subtle"><details class="detail-panel"><summary>查看接口返回</summary><code>{{ summary_json }}</code></details></pre>
   </article>
 
   <article class="panel panel-dark reveal-on-scroll">
     <p class="section-tag">双周期示例</p>
     <h2>第二个关键返回长这样。</h2>
-    <pre class="dark-pre subtle"><code>{{ comparison_json }}</code></pre>
+    <pre class="dark-pre subtle"><details class="detail-panel"><summary>查看接口返回</summary><code>{{ comparison_json }}</code></details></pre>
   </article>
 </section>
 
@@ -196,10 +196,10 @@ const comparison = await fetch(
   <div>
     <p class="section-tag">下一步</p>
     <h2>现在你可以直接开始：看页面，或者接接口。</h2>
-    <p>如果你要演示产品，就先去在线演示；如果你要开发接入，就先去接口文档。</p>
+    <p>如果你要演示产品，就先去工作台分析数据；如果你要开发接入，就先去接口文档。</p>
   </div>
   <div class="cta-actions">
-    <a class="button button-primary" href="/studio">打开在线演示</a>
+    <a class="button button-primary" href="/workbench">进入工作台</a>
     <a class="button button-secondary" href="/docs">打开接口文档</a>
   </div>
 </section>

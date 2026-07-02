@@ -1,0 +1,287 @@
+.field-guide,
+.insight-grid,
+.quality-grid,
+.report-control-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.field-guide,
+.insight-grid,
+.quality-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field-card,
+.insight-card {
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.field-card strong,
+.insight-card strong {
+  display: block;
+  color: var(--brand-strong);
+  margin-bottom: 8px;
+}
+
+.field-card p,
+.insight-card p,
+.insight-card span {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.light-quality .insight-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.light-quality .insight-card strong,
+.light-quality .insight-card span,
+.light-quality .insight-card p {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.report-control-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.compact-control-grid {
+  gap: 12px;
+}
+
+.compact-section-grid {
+  gap: 18px;
+}
+
+.compact-insight-grid,
+.compact-quality-grid,
+.compact-card-grid,
+.compact-field-guide {
+  gap: 12px;
+}
+
+.compact-list li + li {
+  margin-top: 8px;
+}
+
+.compact-pre {
+  max-height: 320px;
+}
+
+.compact-form-grid {
+  gap: 12px;
+}
+
+.detail-panel {
+  margin-top: 18px;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-md);
+}
+
+.detail-panel summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 18px 22px;
+  color: var(--brand-strong);
+  font-weight: 800;
+}
+
+.detail-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.detail-panel summary::after {
+  content: "+";
+  float: right;
+  font-size: 1.1rem;
+}
+
+.detail-panel[open] summary::after {
+  content: "-";
+}
+
+.detail-grid {
+  display: grid;
+  gap: 16px;
+  padding: 0 18px 18px;
+}
+
+.detail-card {
+  box-shadow: none;
+}
+
+.compact-brief-panel {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.mini-note-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.mini-note-card {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mini-note-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: white;
+}
+
+.mini-note-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.6;
+}
+
+.compact-title {
+  margin-bottom: 0;
+}
+
+.compact-top-gap {
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .field-guide,
+  .insight-grid,
+  .quality-grid,
+  .report-control-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== 打印控制 ===== */
+.print-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.print-actions .button-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.print-actions .button-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.print-only {
+  display: none;
+}
+
+/* ===== 打印样式 ===== */
+@media print {
+  .print-actions,
+  .detail-panel,
+  [data-report-form],
+  [data-report-tabs],
+  [data-report-custom-datasets],
+  .chip-button,
+  .endpoint-pick,
+  .reveal-on-scroll {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  .report-print-detail {
+    padding: 0;
+    background: white;
+    color: #111;
+  }
+
+  .print-section-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #111;
+    border-bottom: 2px solid #111;
+    padding-bottom: 6px;
+    margin-bottom: 20px;
+  }
+
+  .print-block {
+    margin-bottom: 28px;
+  }
+
+  .print-block h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 10px;
+  }
+
+  .print-note {
+    font-size: 0.85rem;
+    color: #444;
+    margin-bottom: 8px;
+  }
+
+  .print-data-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.88rem;
+    line-height: 1.9;
+    color: #222;
+  }
+
+  .print-data-list strong {
+    color: #111;
+  }
+
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    color: #222;
+  }
+
+  .print-table th {
+    background: #f0f0f0;
+    font-weight: 700;
+    text-align: left;
+    padding: 7px 12px;
+    border: 1px solid #ccc;
+    color: #111;
+  }
+
+  .print-table td {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+  }
+
+  .print-table tr:nth-child(even) td {
+    background: #fafafa;
+  }
+
+  @page {
+    margin: 18mm 20mm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

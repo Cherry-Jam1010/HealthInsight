@@ -1,0 +1,9 @@
+| 用途         | 文件名          | 模块                                  |
+| ---------- | ------------ | ----------------------------------- |
+| 人口学变量      | `DEMO_L.xpt` | Demographics                        |
+| PHQ-9 抑郁问卷 | `DPQ_L.xpt`  | Mental Health - Depression Screener |
+| 睡眠变量       | `SLQ_L.xpt`  | Sleep Disorders                     |
+| BMI / 身体测量 | `BMX_L.xpt`  | Body Measures                       |
+| 慢病变量       | `MCQ_L.xpt`  | Medical Conditions                  |
+
+所有文件都通过同一个 ID 变量合并：SEQN

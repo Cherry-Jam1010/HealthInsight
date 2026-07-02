@@ -19,7 +19,7 @@
           <span class="brand-chip">HI</span>
           <span>
             <strong>HealthInsight</strong>
-            <small>机构级健康洞察平台</small>
+            <small>心理健康风险识别工作台</small>
           </span>
         </a>
         <button class="nav-toggle" type="button" data-nav-toggle aria-label="打开导航">
@@ -27,19 +27,16 @@
           <span></span>
         </button>
         <nav class="site-nav" data-nav-menu>
-          {% for item in nav_items %}
+          {% for item in nav_groups %}
           <a
             href="{{ item.href }}"
-            class="{% if item.key == active_page %}is-active{% endif %}"
+            class="nav-item {% if item.key == active_page %}is-active{% endif %}"
           >
             {{ item.label }}
           </a>
           {% endfor %}
+          <a href="/docs" class="nav-item nav-item-doc">API 文档</a>
         </nav>
-        <div class="header-actions">
-          <a class="ghost-link" href="/examples">查看实例</a>
-          <a class="primary-link" href="/studio">在线演示</a>
-        </div>
       </div>
     </header>
 
@@ -49,13 +46,18 @@
       <div class="footer-grid">
         <section>
           <p class="footer-label">HealthInsight</p>
-          <p>
-            面向公共卫生与心理健康机构的双数据源风险洞察平台。
-          </p>
+          <p>面向公共卫生与心理健康机构的心理健康风险识别工作台。</p>
+          <div class="footer-links">
+            <a href="/">首页</a>
+            <a href="/workbench">工作台</a>
+            <a href="/reports">报告中心</a>
+            <a href="/guide">使用指南</a>
+            <a href="/vision">全球视野</a>
+          </div>
         </section>
         <section>
-          <p class="footer-label">核心服务</p>
-          <p>PHQ-9 风险画像、双周期对照、阈值模拟、机构级简报输出。</p>
+          <p class="footer-label">核心功能</p>
+          <p>PHQ-9 风险识别、重点人群发现、阈值模拟、机构级报告输出。</p>
         </section>
         <section>
           <p class="footer-label">使用边界</p>

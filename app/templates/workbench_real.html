@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}HealthInsight | 数据工作台{% endblock %}
+
+{% block content %}
+<section class="page-hero section-shell">
+  <p class="eyebrow">Data Workbench</p>
+  <h1>把机构自己的样本导入进来，直接得到可用的风险识别结果和报告草稿。</h1>
+  <p class="hero-lead">
+    这一页不再只是演示数据。你可以上传真实 CSV、快速生成模拟样本，或者手工录入少量个案，
+    然后立刻看到风险概况、重点人群、主要风险因素，以及一份可继续交付给业务团队的机构报告草稿。
+  </p>
+</section>
+
+<section class="section-shell studio-layout workbench-layout" data-practical-workbench-root>
+  <aside class="studio-sidebar panel reveal-on-scroll">
+    <p class="section-tag">快速导入</p>
+    <form class="control-form" data-upload-form>
+      <label>
+        数据集名称
+        <input type="text" name="name" value="机构导入样本" maxlength="80" />
+      </label>
+      <label>
+        量表
+        <select name="scale">
+          <option value="PHQ-9">PHQ-9</option>
+          <option value="CES-D10">CES-D10</option>
+        </select>
+      </label>
+      <label>
+        CSV 文件
+        <input type="file" name="file" accept=".csv,text/csv" data-upload-file />
+      </label>
+      <button type="submit" class="button button-primary wide">导入机构 CSV</button>
+      <a class="button button-secondary wide" href="/api/v1/custom-datasets/template">下载模板 CSV</a>
+    </form>
+
+    <div class="endpoint-mini-list">
+      <span class="status-dot" data-workbench-status>还没有创建临时数据集</span>
+    </div>
+
+    <div class="panel-subsection">
+      <p class="section-tag">生成演示样本</p>
+      <form class="control-form" data-synthetic-form>
+        <label>
+          样本名称
+          <input type="text" name="name" value="演示样本" maxlength="80" />
+        </label>
+        <label>
+          样本量
+          <input type="number" name="sample_size" value="240" min="30" max="5000" />
+        </label>
+        <label>
+          样本画像
+          <select name="profile">
+            <option value="balanced">平衡样本</option>
+            <option value="sleep_stress">睡眠压力型</option>
+            <option value="older_chronic">中老年慢病型</option>
+            <option value="community_outreach">社区外展型</option>
+          </select>
+        </label>
+        <label>
+          量表
+          <select name="scale">
+            <option value="PHQ-9">PHQ-9</option>
+            <option value="CES-D10">CES-D10</option>
+          </select>
+        </label>
+        <label>
+          随机种子
+          <input type="number" name="seed" value="20260520" min="0" max="999999" />
+        </label>
+        <button type="submit" class="button button-secondary wide">生成演示数据集</button>
+      </form>
+    </div>
+
+    <div class="panel-subsection">
+      <p class="section-tag">已有临时数据集</p>
+      <div class="endpoint-mini-list" data-custom-dataset-list>
+        {% if custom_datasets.datasets %}
+          {% for item in custom_datasets.datasets %}
+          <button class="endpoint-pick" type="button" data-custom-dataset="{{ item.id }}">
+            {{ item.label }} 用 {{ item.scale }}
+          </button>
+          {% endfor %}
+        {% else %}
+          <span class="status-dot muted-status">导入或生成后会显示在这里</span>
+        {% endif %}
+      </div>
+    </div>
+  </aside>
+
+  <div class="studio-main">
+    <section class="metric-board reveal-on-scroll">
+      <article class="metric-tile">
+        <span>当前数据集</span>
+        <strong data-workbench-label>未创建</strong>
+        <small>从侧边栏导入或生成</small>
+      </article>
+      <article class="metric-tile">
+        <span>高风险占比</span>
+        <strong data-workbench-high-risk>-</strong>
+        <small>PHQ-9 ≥ 10 的加权比例</small>
+      </article>
+      <article class="metric-tile">
+        <span>平均量表分</span>
+        <strong data-workbench-score>-</strong>
+        <small>当前数据集平均 PHQ-9</small>
+      </article>
+      <article class="metric-tile">
+        <span>短睡眠占比</span>
+        <strong data-workbench-sleep>-</strong>
+        <small>睡眠时长 &lt; 7h 的比例</small>
+      </article>
+    </section>
+
+    <details class="detail-panel reveal-on-scroll">
+      <summary>展开字段说明和手工录入</summary>
+      <div class="detail-grid compact-top-gap">
+        <article class="panel detail-card">
+          <div class="section-heading compact">
+            <p class="section-tag">字段要求</p>
+            <h2>真实 CSV 需要这些核心列</h2>
+          </div>
+          <div class="field-guide compact-field-guide">
+            <article class="field-card">
+              <strong>必填列</strong>
+              <p><code>age</code>, <code>gender</code>, <code>sleep_hours</code>, <code>income_band</code>, <code>education_band</code>, <code>mental_health_score</code></p>
+            </article>
+            <article class="field-card">
+              <strong>建议补充</strong>
+              <p><code>bmi</code>, <code>chronic_condition_count</code>, <code>weight</code>, <code>race_ethnicity</code>, <code>residence_band</code></p>
+            </article>
+            <article class="field-card">
+              <strong>可识别别名</strong>
+              <p><code>sex</code>, <code>income</code>, <code>education</code>, <code>phq9_total</code>, <code>cesd10_total</code>, <code>sample_weight</code></p>
+            </article>
+          </div>
+        </article>
+
+        <article class="panel panel-dark detail-card">
+          <div class="section-heading spread compact">
+            <div>
+              <p class="section-tag">手工录入</p>
+              <h2>没有现成文件时，再展开这里录入样本</h2>
+            </div>
+            <span class="api-path" data-manual-count>0 行</span>
+          </div>
+          <div class="manual-row-list" data-manual-rows></div>
+          <form class="control-form compact-form-grid" data-manual-row-form>
+            <label>
+              年龄
+              <input type="number" name="age" value="42" min="18" max="90" />
+            </label>
+            <label>
+              性别
+              <select name="gender">
+                <option value="female">女</option>
+                <option value="male">男</option>
+              </select>
+            </label>
+            <label>
+              睡眠时长
+              <input type="number" name="sleep_hours" value="5.5" min="0" max="16" step="0.1" />
+            </label>
+            <label>
+              收入层
+              <select name="income_band">
+                <option value="low">低收入</option>
+                <option value="middle">中等收入</option>
+                <option value="high">较高收入</option>
+              </select>
+            </label>
+            <label>
+              教育层
+              <select name="education_band">
+                <option value="high school">高中及以下</option>
+                <option value="college">大学</option>
+                <option value="graduate">研究生及以上</option>
+              </select>
+            </label>
+            <label>
+              BMI
+              <input type="number" name="bmi" value="28.1" min="10" max="60" step="0.1" />
+            </label>
+            <label>
+              慢病数
+              <input type="number" name="chronic_condition_count" value="2" min="0" max="10" />
+            </label>
+            <label>
+              量表得分
+              <input type="number" name="mental_health_score" value="12" min="0" max="30" step="0.1" />
+            </label>
+            <label>
+              样本权重
+              <input type="number" name="weight" value="1" min="0.1" max="100" step="0.1" />
+            </label>
+            <label>
+              居住地
+              <select name="residence_band">
+                <option value="urban">城市</option>
+                <option value="suburban">城乡结合</option>
+                <option value="rural">农村</option>
+              </select>
+            </label>
+            <button type="submit" class="button button-light wide">添加到样本列表</button>
+          </form>
+          <form class="control-form inline-control-form compact-form-grid" data-manual-dataset-form>
+            <label>
+              数据集名称
+              <input type="text" name="name" value="手工录入样本" maxlength="80" />
+            </label>
+            <label>
+              量表
+              <select name="scale">
+                <option value="PHQ-9">PHQ-9</option>
+                <option value="CES-D10">CES-D10</option>
+              </select>
+            </label>
+            <button type="submit" class="button button-light wide">生成手工数据集</button>
+            <button type="button" class="button button-secondary wide" data-manual-clear>清空列表</button>
+          </form>
+        </article>
+      </div>
+    </details>
+
+    <section class="section-grid-two">
+      <article class="panel reveal-on-scroll">
+        <div class="section-heading compact">
+          <p class="section-tag">重点人群</p>
+          <h2>当前样本里谁最值得优先筛查</h2>
+        </div>
+        <div class="cohort-board" data-workbench-cohorts></div>
+      </article>
+
+      <article class="panel reveal-on-scroll">
+        <div class="section-heading compact">
+          <p class="section-tag">风险因素</p>
+          <h2>哪些分层最值得写进报告解释</h2>
+        </div>
+        <div class="cohort-stack" data-workbench-risk-factors></div>
+      </article>
+    </section>
+
+    <section class="section-grid-two">
+      <article class="panel reveal-on-scroll">
+        <div class="section-heading spread compact">
+          <div>
+            <p class="section-tag">机构报告草稿</p>
+            <h2 data-workbench-report-headline>先导入一个数据集</h2>
+          </div>
+          <button type="button" class="ghost-chip" data-workbench-export-report>下载 Markdown 报告</button>
+        </div>
+        <ul class="clean-list" data-workbench-report-focus></ul>
+        <div class="insight-grid" data-workbench-actions></div>
+      </article>
+
+      <article class="panel panel-dark reveal-on-scroll">
+        <div class="section-heading compact">
+          <p class="section-tag">数据质量</p>
+          <h2>报告能否直接用于机构讨论</h2>
+        </div>
+        <div class="quality-grid light-quality" data-workbench-quality></div>
+      </article>
+    </section>
+
+    <details class="detail-panel reveal-on-scroll">
+      <summary>查看技术明细</summary>
+      <div class="detail-grid compact-top-gap">
+        <article class="panel panel-dark detail-card">
+          <div class="section-heading spread compact">
+            <div>
+              <p class="section-tag">摘要 JSON</p>
+              <h2>当前数据集接口结果</h2>
+            </div>
+            <span class="api-path">/api/v1/summary?dataset=custom:{id}</span>
+          </div>
+          <pre class="dark-pre subtle compact-pre" data-workbench-json><code>{{ custom_datasets_json }}</code></pre>
+        </article>
+      </div>
+    </details>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/operational.css') }}?v=20260622c" />
+<script src="{{ url_for('static', path='/js/operational.js') }}?v=20260622c" defer></script>
+{% endblock %}

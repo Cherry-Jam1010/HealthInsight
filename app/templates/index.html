@@ -1,24 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}HealthInsight | 机构级心理健康洞察平台{% endblock %}
+{% block title %}HealthInsight | 更快找到需要心理健康筛查支持的人群{% endblock %}
 
 {% block content %}
+<!-- ═══════════════════════════════════════════════════ HERO ══ -->
 <section class="hero hero-home section-shell">
   <div class="hero-copy">
     <p class="eyebrow">Mental Health Insight Platform</p>
     <h1>更快看清哪些人群更需要心理健康筛查与支持。</h1>
     <p class="hero-lead">
-      HealthInsight 把当前 PHQ-9 风险数据和历史行为基线放到同一套平台里，
-      帮机构快速完成重点人群识别、风险沟通、阈值模拟和管理汇报。
+      导入你自己的样本，平台自动计算风险、找到重点人群、生成可直接转发的正式报告。
+      不需要写代码，不需要懂数据字典。
     </p>
     <div class="hero-actions">
-      <a class="button button-primary" href="/studio">在线演示</a>
-      <a class="button button-secondary" href="/examples">查看实例</a>
+      <a class="button button-primary" href="/workbench">开始分析</a>
+      <a class="button button-secondary" href="/reports">查看报告示例</a>
     </div>
     <div class="hero-badges">
       <span>PHQ-9 风险识别</span>
-      <span>双周期对照</span>
-      <span>阈值模拟</span>
+      <span>重点人群发现</span>
+      <span>正式报告输出</span>
     </div>
   </div>
   <div class="hero-visual">
@@ -45,211 +46,145 @@
   </div>
 </section>
 
-<section class="section-shell section-grid">
-  <article class="panel panel-accent reveal-on-scroll">
-    <p class="section-tag">一句话价值</p>
-    <h2>把公开健康数据变成机构能直接使用的筛查支持工具。</h2>
-    <p>
-      你不需要先读数据字典，也不需要自己拼接分析流程。
-      平台已经把 PHQ-9 风险、睡眠、收入、BMI 和慢病负担整理成可以直接查看的结果。
-    </p>
-  </article>
-  <article class="panel reveal-on-scroll">
-    <p class="section-tag">适合谁用</p>
-    <ul class="clean-list">
-      <li>公共卫生团队：看清重点人群和风险差异。</li>
-      <li>心理健康机构：安排筛查、外展和资源配置。</li>
-      <li>医院与管理部门：更快形成汇报和行动优先级。</li>
-    </ul>
-  </article>
+<!-- ═══════════════════════════════════════════ THREE STEPS ══ -->
+<section class="section-shell steps-section">
+  <div class="section-heading centered">
+    <p class="eyebrow">使用流程</p>
+    <h2>三步，完成一次完整的风险分析</h2>
+  </div>
+  <div class="steps-row">
+    <article class="step-card reveal-on-scroll">
+      <div class="step-number">1</div>
+      <div class="step-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M4 8h24M4 16h16M4 24h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M22 18l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>导入样本</h3>
+      <p>拖入你自己的 CSV，或一键生成演示数据。平台自动清洗字段、计算 PHQ-9 分数。</p>
+    </article>
+    <div class="step-arrow" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <article class="step-card reveal-on-scroll">
+      <div class="step-number">2</div>
+      <div class="step-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="2"/>
+          <path d="M16 10v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>查看分析</h3>
+      <p>系统自动计算高风险率、找到重点人群组合、识别关键分层因素，全部实时展示。</p>
+    </article>
+    <div class="step-arrow" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <article class="step-card reveal-on-scroll">
+      <div class="step-number">3</div>
+      <div class="step-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M8 4h16v24H8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 10h8M12 14h8M12 18h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>生成报告</h3>
+      <p>一键生成面向管理、研究或临床团队的正式报告，直接下载 Markdown 或转发。</p>
+    </article>
+  </div>
+  <div class="steps-cta">
+    <a class="button button-primary" href="/workbench">进入工作台</a>
+  </div>
 </section>
 
+<!-- ════════════════════════════════════════ USE CASES ══ -->
 <section class="section-shell">
   <div class="section-heading">
-    <p class="section-tag">核心能力</p>
-    <h2>四件事，足够支撑大多数机构的第一轮决策。</h2>
+    <p class="eyebrow">典型场景</p>
+    <h2>这些情况都适合用 HealthInsight</h2>
   </div>
   <div class="feature-grid">
     <article class="feature-card reveal-on-scroll">
-      <h3>看清风险</h3>
-      <p>直接查看不同人群的 PHQ-9 高风险分布。</p>
+      <h3>机构新筛查规划</h3>
+      <p>拿到一批新的筛查数据，不知道从哪里开始。用平台快速看清高风险分布和重点人群。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
-      <h3>找到重点</h3>
-      <p>识别最值得优先筛查和外展的人群组合。</p>
+      <h3>区域风险基线摸排</h3>
+      <p>需要给领导汇报本地区的心理健康风险情况。直接生成一份正式报告，不用自己整理。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
-      <h3>估算资源</h3>
-      <p>用阈值模拟快速估算筛出量和承接压力。</p>
+      <h3>资源配置与承接估算</h3>
+      <p>调整 PHQ-9 阈值，快速估算筛出人数和服务承接压力，支撑预算和排班决策。</p>
     </article>
     <article class="feature-card reveal-on-scroll">
-      <h3>补足背景</h3>
-      <p>用历史睡眠和活动基线帮助解释当前风险。</p>
+      <h3>多受众沟通</h3>
+      <p>同一份数据，管理团队看风险等级，研究团队看分层因素，临床团队看行动优先级。</p>
     </article>
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════ METRICS ══ -->
 <section class="section-shell section-grid-two">
-  <article class="panel reveal-on-scroll">
-    <p class="section-tag">双数据源</p>
-    <h2>现在的风险结果，配合历史行为基线一起看。</h2>
+  <article class="panel panel-dark reveal-on-scroll">
+    <p class="section-tag">当前样本数据</p>
+    <h2>平台当前基于北美公开调查数据的分析结果</h2>
     <div class="metric-board compact-metrics">
+      <article class="metric-tile">
+        <span>PHQ 完整样本</span>
+        <strong>{{ summary.sample.phq_complete_rows }}</strong>
+        <small>可直接计算 PHQ-9 的成人</small>
+      </article>
+      <article class="metric-tile">
+        <span>高风险率</span>
+        <strong>{{ summary.mental_health_signals.phq_high_risk_rate_pct }}%</strong>
+        <small>PHQ-9 ≥ 10（加权）</small>
+      </article>
       <article class="metric-tile">
         <span>当前短睡眠率</span>
         <strong>{{ summary.shared_signals.current_short_sleep_rate_pct }}%</strong>
+        <small>NHANES 当前周期</small>
       </article>
       <article class="metric-tile">
         <span>历史短睡眠率</span>
         <strong>{{ summary.shared_signals.legacy_short_sleep_rate_pct }}%</strong>
-      </article>
-      <article class="metric-tile">
-        <span>历史不活跃率</span>
-        <strong>{{ summary.baseline_behavior_signals.legacy_inactive_rate_pct }}%</strong>
-      </article>
-      <article class="metric-tile">
-        <span>短睡眠变化</span>
-        <strong>{{ summary.shared_signals.short_sleep_gap_pct_point }}pt</strong>
+        <small>NHANES 历史周期</small>
       </article>
     </div>
     <p>
-      当前周期负责识别 PHQ-9 风险，历史周期负责补充睡眠和活动背景。
-      这能让机构不只知道“谁风险更高”，也更容易解释“为什么值得优先关注”。
+      这些是北美公开调查数据的分析结果。你可以导入自己的样本，用同一套方法重新跑分析。
     </p>
   </article>
 
-  <article class="panel panel-dark reveal-on-scroll">
-    <p class="section-tag">管理摘要</p>
-    <h2>{{ manager_report.headline }}</h2>
-    <ul class="clean-list light">
-      {% for point in manager_report.focus_points %}
-      <li>{{ point }}</li>
-      {% endfor %}
-    </ul>
-    <a class="button button-light" href="/reports">查看完整简报</a>
-  </article>
-</section>
-
-<section class="section-shell interactive-panel reveal-on-scroll">
-  <div class="section-heading spread">
-    <div>
-      <p class="section-tag">实时画像</p>
-      <h2>不同人群的 PHQ-9 高风险分布</h2>
-    </div>
-    <div class="chip-row">
-      <button class="chip-button is-active" data-home-group="age_band">按年龄</button>
-      <button class="chip-button" data-home-group="income_band">按收入</button>
-      <button class="chip-button" data-home-group="sleep_band">按睡眠</button>
-    </div>
-  </div>
-  <div class="live-grid" data-home-profile data-current-group="age_band">
-    <div class="profile-bars" data-profile-bars>
-      {% for row in profile.rows[:4] %}
-      <div class="bar-item">
-        <div class="bar-label">
-          <span>{{ row.group }}</span>
-          <strong>{{ row.high_risk_rate_pct }}%</strong>
-        </div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width: {{ row.high_risk_rate_pct or 0 }}%"></div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    <div class="api-preview">
-      <div class="code-topline">实时接口返回</div>
-      <pre data-home-json><code>{{ profile_json }}</code></pre>
-    </div>
-  </div>
-</section>
-
-<section class="section-shell section-grid-two">
   <article class="panel reveal-on-scroll">
-    <p class="section-tag">重点对象</p>
-    <h2>当前最值得优先纳入筛查的人群组合</h2>
-    <div class="cohort-stack">
-      {% for row in cohorts.rows[:4] %}
-      <article class="cohort-card">
-        <div class="cohort-title">{{ row.segment_label }}</div>
-        <div class="cohort-meta">{{ row.participants }} 人样本</div>
-        <div class="metric-inline">
-          <span>PHQ-9 高风险</span>
-          <strong>{{ row.high_risk_rate_pct }}%</strong>
-        </div>
-        <div class="metric-inline">
-          <span>平均 PHQ-9</span>
-          <strong>{{ row.mean_phq9_score }}</strong>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-  </article>
-
-  <article class="panel reveal-on-scroll">
-    <p class="section-tag">双周期快照</p>
-    <h2>同一类人群，当前风险与历史睡眠背景一起看</h2>
-    <div class="cohort-stack">
-      {% for row in comparison.rows[:4] %}
-      <article class="cohort-card">
-        <div class="cohort-title">{{ row.group }}</div>
-        <div class="cohort-meta">
-          当前 {{ row.current_participants or "-" }} 人 / 历史 {{ row.baseline_participants or "-" }} 人
-        </div>
-        <div class="metric-inline">
-          <span>当前 PHQ-9 高风险</span>
-          <strong>{{ row.current_high_risk_rate_pct or "-" }}%</strong>
-        </div>
-        <div class="metric-inline">
-          <span>历史短睡眠率</span>
-          <strong>{{ row.baseline_short_sleep_rate_pct or "-" }}%</strong>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-  </article>
-</section>
-
-<section class="section-shell section-grid-two">
-  <article class="panel reveal-on-scroll">
-    <p class="section-tag">风险线索</p>
-    <h2>哪些因素分层最值得优先关注</h2>
-    <div class="cohort-stack">
-      {% for row in risk_factors.rows %}
-      <article class="cohort-card">
-        <div class="cohort-title">{{ row.dimension }} / {{ row.group }}</div>
-        <div class="cohort-meta">{{ row.participants }} 人有效样本</div>
-        <div class="metric-inline">
-          <span>高风险率</span>
-          <strong>{{ row.high_risk_rate_pct }}%</strong>
-        </div>
-        <div class="metric-inline">
-          <span>高于总体</span>
-          <strong>{{ row.uplift_vs_overall_pct_point }}pt</strong>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-  </article>
-
-  <article class="panel panel-accent reveal-on-scroll">
-    <p class="section-tag">下一步怎么用</p>
-    <h2>先用平台看清风险，再决定筛查节奏和资源投入。</h2>
+    <p class="section-tag">适合谁用</p>
+    <h2>公共卫生、心理健康机构与医院管理团队</h2>
     <ul class="clean-list">
-      <li>进入在线演示：直接查看接口和实时结果。</li>
-      <li>进入落地实例：看看不同机构怎么使用这些结论。</li>
-      <li>进入报告中心：按研究、管理和临床视角切换输出。</li>
+      <li>公共卫生团队：看清重点人群和风险差异，快速形成汇报材料。</li>
+      <li>心理健康机构：安排筛查、外展和资源配置，降低人工评估成本。</li>
+      <li>医院与管理部门：支撑筛查优先级决策，快速向不同受众传递结论。</li>
     </ul>
+    <div class="hero-actions" style="margin-top: 1.5rem">
+      <a class="button button-primary" href="/workbench">开始分析</a>
+      <a class="button button-secondary" href="/guide">查看指南</a>
+    </div>
   </article>
 </section>
 
+<!-- ══════════════════════════════════════════════ CTA ══ -->
 <section class="section-shell cta-ribbon reveal-on-scroll">
   <div>
-    <p class="section-tag">立即体验</p>
+    <p class="eyebrow">立即开始</p>
     <h2>从风险画像到阈值模拟，一次看清平台能做什么。</h2>
-    <p>如果你要给客户、老师或团队展示产品，现在就可以直接进入演示页。</p>
+    <p>导入你自己的样本，或使用演示数据，直接在工作台里完成全流程。</p>
   </div>
   <div class="cta-actions">
-    <a class="button button-primary" href="/studio">打开演示</a>
-    <a class="button button-secondary" href="/vision">查看全球视野</a>
+    <a class="button button-primary" href="/workbench">进入工作台</a>
+    <a class="button button-secondary" href="/reports">查看报告示例</a>
   </div>
 </section>
 {% endblock %}
