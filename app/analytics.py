@@ -171,7 +171,7 @@ LEGACY_ACTIVITY_YES_NO_COLUMNS = [
 ]
 DEFAULT_MENTAL_DATA_BASE_URL = os.getenv(
     "HEALTHINSIGHT_MH_DATA_BASE_URL",
-    "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2021/DataFiles",
+    "https://wwwn.cdc.gov/Nchs/Nhanes/Public/2021/DataFiles",
 )
 CSV_IMPORT_ALIASES = {
     "age": ["age", "age_years", "ridageyr"],
